@@ -1,7 +1,7 @@
-import Page from '@/components/Page';
-import Feature from '@/components/Feature';
-import Grid from '@/components/Grid';
-import Teaser from '@/components/Teaser';
+import Page from '@/components/blocks/Page';
+import Feature from '@/components/blocks/Feature';
+import Grid from '@/components/blocks/Grid';
+import Teaser from '@/components/blocks/Teaser';
 import { apiPlugin, storyblokInit } from '@storyblok/react/rsc';
 
 export const getStoryblokApi = storyblokInit({

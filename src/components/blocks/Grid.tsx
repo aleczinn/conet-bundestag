@@ -11,7 +11,7 @@ interface GridProps {
 }
 
 const Grid = ({ blok }: GridProps) => (
-		<div {...storyblokEditable(blok)} className="grid">
+		<div {...storyblokEditable(blok)} className="grid grid-cols-3 gap-4">
 				 {blok.columns.map((nestedBlok) => (
 					 <StoryblokServerComponent blok={nestedBlok} key={nestedBlok._uid} />
 				 ))}

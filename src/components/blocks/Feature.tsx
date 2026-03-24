@@ -9,7 +9,7 @@ interface FeatureProps {
 
 const Feature = ({ blok }: FeatureProps) => {
 	return (
-		<div className="feature" {...storyblokEditable(blok)}>
+		<div className="p-8 bg-blue-100 text-center rounded-3xl font-semibold" {...storyblokEditable(blok)}>
 			<span>{blok.name}</span>
 		</div>
 	);

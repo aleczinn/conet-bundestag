@@ -9,7 +9,7 @@ interface TeaserProps {
 
 const Teaser = ({ blok }: TeaserProps) => {
 	return (
-		<div className="teaser" {...storyblokEditable(blok)}>
+		<div className="bg-amber-100 rounded-3xl text-center p-16 text-2xl font-bold" {...storyblokEditable(blok)}>
 			<h1>{blok.headline}</h1>
 		</div>
 	);
