@@ -3,6 +3,14 @@ import Feature from '@/components/blocks/Feature';
 import Grid from '@/components/blocks/Grid';
 import Teaser from '@/components/blocks/Teaser';
 import { apiPlugin, storyblokInit } from '@storyblok/react/rsc';
+import Hero from '@/components/blocks/Hero';
+
+const cachedFetch = (input: any, init?: any): Promise<Response> => {
+	return fetch(input, {
+		...init,
+		cache: 'no-store',
+	});
+};
 
 export const getStoryblokApi = storyblokInit({
 	accessToken: process.env.STORYBLOK_DELIVERY_API_TOKEN,
@@ -12,6 +20,7 @@ export const getStoryblokApi = storyblokInit({
 		feature: Feature,
 		grid: Grid,
 		teaser: Teaser,
+		hero: Hero,
 	},
 	apiOptions: {
 		/** Set the correct region for your space. Learn more: https://www.storyblok.com/docs/packages/storyblok-js#example-region-parameter */
@@ -20,5 +29,6 @@ export const getStoryblokApi = storyblokInit({
 		endpoint: process.env.STORYBLOK_API_BASE_URL
 			? `${new URL(process.env.STORYBLOK_API_BASE_URL).origin}/v2`
 			: undefined,
+		fetch: cachedFetch,
 	},
 });

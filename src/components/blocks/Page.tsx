@@ -12,7 +12,7 @@ interface PageProps {
 
 const Page = ({ blok }: PageProps) => (
 	<main className="flex-1" {...storyblokEditable(blok)}>
-		<div className="max-w-bt mx-auto flex flex-col gap-12">
+		<div className="flex flex-col gap-12">
 			{blok.body?.map((nestedBlok) => (
 				<StoryblokServerComponent blok={nestedBlok} key={nestedBlok._uid} />
 			))}

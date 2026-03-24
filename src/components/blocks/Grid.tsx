@@ -11,11 +11,13 @@ interface GridProps {
 }
 
 const Grid = ({ blok }: GridProps) => (
+	<div className="max-w-bt mx-auto w-full px-4 md:px-8">
 		<div {...storyblokEditable(blok)} className="grid grid-cols-3 gap-4">
-				 {blok.columns.map((nestedBlok) => (
-					 <StoryblokServerComponent blok={nestedBlok} key={nestedBlok._uid} />
-				 ))}
+			{blok.columns.map((nestedBlok) => (
+				<StoryblokServerComponent blok={nestedBlok} key={nestedBlok._uid} />
+			))}
 		</div>
+	</div>
 );
 
 export default Grid;
