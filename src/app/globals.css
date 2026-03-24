@@ -1,1 +1,52 @@
-@import 'https://a.storyblok.com/f/212319/x/e6ccda03b8/blueprint-blank.css';
+@import "tailwindcss";
+
+@theme {
+    /* Colors */
+    --color-white: #ffffff;
+
+    /* Font Sizes */
+    --font-size-4xs: 0.375rem;
+    --font-size-3xs: 0.5rem;
+    --font-size-2xs: 0.625rem;
+
+    /* Breakpoints */
+    --breakpoint-3xl: 112rem;
+    --breakpoint-4xl: 128rem;
+
+    /* Max Width */
+    --max-width-bt: 95rem;
+
+    /* Border Width */
+    --border-width-1: 1px;
+
+    /* Z-Index */
+    --z-index-popup: 9000;
+}
+
+html {
+    block-size: 100%;
+}
+
+body {
+    text-rendering: optimizeLegibility;
+    text-wrap: pretty;
+}
+
+@layer base {
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html {
+        scroll-behavior: smooth;
+    }
+}
