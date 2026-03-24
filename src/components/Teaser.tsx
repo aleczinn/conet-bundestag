@@ -1,6 +1,13 @@
 import { storyblokEditable } from '@storyblok/react/rsc';
+import { SbBlokData } from '@storyblok/react';
 
-const Teaser = ({ blok }) => {
+interface TeaserProps {
+	blok: SbBlokData & {
+		headline: string;
+	};
+}
+
+const Teaser = ({ blok }: TeaserProps) => {
 	return (
 		<div className="teaser" {...storyblokEditable(blok)}>
 			<h1>{blok.headline}</h1>
