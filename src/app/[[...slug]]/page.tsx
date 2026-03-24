@@ -28,6 +28,10 @@ export default async function Page({ params }: PageProps) {
 
 		return <StoryblokStory story={data.story} />;
 	} catch (error) {
+		if (process.env.NODE_ENV === 'development') {
+			console.error('Storyblok error:', error);
+		}
+
 		return notFound();
 	}
 }

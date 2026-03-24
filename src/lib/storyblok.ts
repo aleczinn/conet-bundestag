@@ -1,14 +1,13 @@
 import { apiPlugin, storyblokInit } from '@storyblok/react/rsc';
-import Page from '@/components/blocks/Page';
-import Feature from '@/components/blocks/Feature';
-import Grid from '@/components/blocks/Grid';
-import Teaser from '@/components/blocks/Teaser';
-import Hero from '@/components/blocks/Hero';
+import { Feature, Grid, Hero, Page, Teaser } from '@/components/blocks';
 
-const cachedFetch = (input: any, init?: any): Promise<Response> => {
+const cachedFetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
 	return fetch(input, {
 		...init,
-		cache: 'no-store',
+		next: {
+			/** There is no cache in the development environment, so changes are visible immediately; in the production environment, Next.js revalidates every 60 seconds */
+			revalidate: process.env.NODE_ENV === 'development' ? 0 : 60,
+		},
 	});
 };
 
