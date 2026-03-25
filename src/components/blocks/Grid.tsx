@@ -3,6 +3,7 @@ import {
 	StoryblokServerComponent,
 } from '@storyblok/react/rsc';
 import { SbBlokData } from '@storyblok/react';
+import { Section } from '@/components/layout';
 
 interface GridProps {
 	blok: SbBlokData & {
@@ -11,13 +12,13 @@ interface GridProps {
 }
 
 const Grid = ({ blok }: GridProps) => (
-	<div className="max-w-bt mx-auto w-full px-4 md:px-8">
+	<Section>
 		<div {...storyblokEditable(blok)} className="grid grid-cols-3 gap-4">
 			{blok.columns.map((nestedBlok) => (
 				<StoryblokServerComponent blok={nestedBlok} key={nestedBlok._uid} />
 			))}
 		</div>
-	</div>
+	</Section>
 );
 
 export default Grid;

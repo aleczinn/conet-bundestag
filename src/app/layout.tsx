@@ -2,8 +2,7 @@ import './globals.css';
 import { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import StoryblokProvider from '../components/StoryblokProvider';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
+import { Footer, Header } from '@/components/layout';
 
 export const metadata: Metadata = {
 	metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
