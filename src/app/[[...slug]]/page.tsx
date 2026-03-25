@@ -65,7 +65,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function Page({ params }: PageProps) {
 	const { slug } = await params;
 	const fullSlug = slug ? slug.join('/') : 'home';
-	const storyblokApi = getStoryblokApi();
 
 	try {
 		const { data } = await getStory(fullSlug);
