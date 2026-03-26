@@ -3,3 +3,7 @@ export { default as IconBundestagMobile } from "./IconBundestagMobile";
 export { default as IconEasy } from "./IconEasy";
 export { default as IconGlobe } from "./IconGlobe";
 export { default as IconSign } from "./IconSign";
+export { default as IconSearch } from "./IconSearch";
+export { default as IconSearchSmall } from "./IconSearchSmall";
+export { default as IconMenuOff } from "./IconMenuOff";
+export { default as IconMenuOn } from "./IconMenuOn";
