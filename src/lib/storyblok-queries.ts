@@ -1,6 +1,11 @@
 import { cache } from 'react';
 import { getStoryblokApi } from '@/lib/storyblok';
 
+const getVersion = () => {
+	return process.env.NODE_ENV === 'development' ? 'draft' as const : 'published' as const;
+}
+
+
 /**
  * Lädt eine Storyblok Story anhand des Slugs.
  *
@@ -14,10 +19,9 @@ import { getStoryblokApi } from '@/lib/storyblok';
  */
 export const getStory = cache(async (fullSlug: string) => {
 	const storyblokApi = getStoryblokApi();
-	const version = process.env.NODE_ENV === 'development' ? 'draft' : 'published';
 
 	return storyblokApi.get(`cdn/stories/${fullSlug}`, {
-		version: version,
+		version: getVersion(),
 	});
 });
 
@@ -29,10 +33,8 @@ export const getStory = cache(async (fullSlug: string) => {
  */
 export const getLinks = cache(async () => {
 	const storyblokApi = getStoryblokApi();
-	const version = process.env.NODE_ENV === 'development' ? 'draft' : 'published';
 
 	return storyblokApi.get('cdn/links', {
-		// version: 'draft' as const,
-		version: version,
+		version: getVersion(),
 	});
 });

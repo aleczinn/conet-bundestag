@@ -1,19 +1,15 @@
 import { StoryblokStory } from '@storyblok/react/rsc';
-import { getStoryblokApi } from '@/lib/storyblok';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { getStory } from '@/lib/storyblok-queries';
+import { Breadcrumbs } from '@/components/layout';
+import { BASE_URL } from '@/lib/site';
 
 interface PageProps {
 	params: Promise<{
 		slug?: string[];
 	}>;
 }
-
-const BASE_URL =
-	process.env.NEXT_PUBLIC_SITE_URL ||
-	process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}` ||
-	'http://localhost:3000';
 
 function buildCanonicalUrl(base: string, fullSlug: string): string {
 	const path = fullSlug === 'home' ? '' : fullSlug;
@@ -65,6 +61,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function Page({ params }: PageProps) {
 	const { slug } = await params;
 	const fullSlug = slug ? slug.join('/') : 'home';
+	const pathname = '/' + (fullSlug === 'home' ? '' : fullSlug);
 
 	try {
 		const { data } = await getStory(fullSlug);
@@ -73,7 +70,12 @@ export default async function Page({ params }: PageProps) {
 			return notFound();
 		}
 
-		return <StoryblokStory story={data.story} />;
+		return (
+			<main className="flex-1">
+				<Breadcrumbs pathname={pathname} />
+				<StoryblokStory story={data.story} />
+			</main>
+		);
 	} catch (error) {
 		if (process.env.NODE_ENV === 'development') {
 			console.error('Storyblok error:', error);
