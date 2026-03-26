@@ -18,7 +18,7 @@ interface StoryblokLink {
 	is_folder?: boolean;
 }
 
-async function buildBreadcrumbs(pathname: string): Promise<BreadcrumbItem[]> {
+export async function buildBreadcrumbs(pathname: string): Promise<BreadcrumbItem[]> {
 	// Slug aus Pathname ableiten: "/" -> "home", "/a/b" -> "a/b"
 	const rawSlug = pathname.replace(/^\//, '') || 'home';
 
@@ -56,10 +56,8 @@ async function buildBreadcrumbs(pathname: string): Promise<BreadcrumbItem[]> {
 	return breadcrumbs;
 }
 
-export default async function Breadcrumbs({ pathname }: BreadcrumbsProps) {
-	const breadcrumbs = await buildBreadcrumbs(pathname);
-
-	const schemaData = {
+export function buildBreadcrumbSchema(breadcrumbs: BreadcrumbItem[]) {
+	return {
 		'@context': 'https://schema.org',
 		'@type': 'BreadcrumbList',
 		itemListElement: breadcrumbs.map((item, index) => ({
@@ -69,45 +67,43 @@ export default async function Breadcrumbs({ pathname }: BreadcrumbsProps) {
 			item: `${BASE_URL}${item.href}`,
 		})),
 	};
+}
+
+export default async function Breadcrumbs({ pathname }: BreadcrumbsProps) {
+	const breadcrumbs = await buildBreadcrumbs(pathname);
 
 	return (
-		<>
-			<script type="application/ld+json"
-							dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
-			/>
+		<Container
+			className="h-16 flex flex-row items-center bg-gray-10"
+			aria-label="Brotkrumennavigation"
+		>
+			<ol className="flex flex-wrap items-center gap-2">
+				{breadcrumbs.map((item, index) => {
+					const isLast = index === breadcrumbs.length - 1;
 
-			<Container
-				className="h-16 flex flex-row items-center bg-gray-10"
-				aria-label="Brotkrumennavigation"
-			>
-				<ol className="flex flex-wrap items-center gap-2">
-					{breadcrumbs.map((item, index) => {
-						const isLast = index === breadcrumbs.length - 1;
+					return (
+						<li key={item.href} className="flex items-center gap-2">
+							{index > 0 && (
+								<span className="text-sm text-gray-40" aria-hidden="true">|</span>
+							)}
 
-						return (
-							<li key={item.href} className="flex items-center gap-2">
-								{index > 0 && (
-									<span className="text-sm text-gray-40" aria-hidden="true">|</span>
-								)}
-
-								{isLast ? (
-									<span className="text-sm font-bold text-gray-90"
-												aria-current="page"
-									>
+							{isLast ? (
+								<span className="text-sm font-bold text-gray-90"
+											aria-current="page"
+								>
 										{item.name}
 									</span>
-								) : (
-									<Link href={item.href}
-												className="text-sm text-gray-90 hover:underline"
-									>
-										{item.name}
-									</Link>
-								)}
-							</li>
-						);
-					})}
-				</ol>
-			</Container>
-		</>
+							) : (
+								<Link href={item.href}
+											className="text-sm text-gray-90 hover:underline"
+								>
+									{item.name}
+								</Link>
+							)}
+						</li>
+					);
+				})}
+			</ol>
+		</Container>
 	);
 }

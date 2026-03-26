@@ -4,6 +4,7 @@ import { Metadata } from 'next';
 import { getStory } from '@/lib/storyblok-queries';
 import { Breadcrumbs } from '@/components/layout';
 import { BASE_URL } from '@/lib/site';
+import { buildBreadcrumbs, buildBreadcrumbSchema } from '@/components/layout/Breadcrumbs';
 
 interface PageProps {
 	params: Promise<{
@@ -19,6 +20,11 @@ function buildCanonicalUrl(base: string, fullSlug: string): string {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
 	const { slug } = await params;
 	const fullSlug = slug ? slug.join('/') : 'home';
+	const pathname = '/' + (fullSlug === 'home' ? '' : fullSlug);
+
+	// Breadcrumbs
+	const breadcrumbs = await buildBreadcrumbs(pathname);
+	const schema = buildBreadcrumbSchema(breadcrumbs);
 
 	try {
 		const { data } = await getStory(fullSlug);
@@ -49,6 +55,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 				description: content.seo_description || '',
 				images: [ogImage],
 			},
+			other: {
+				'script:ld+json': JSON.stringify(schema),
+			}
 		};
 	} catch {
 		return {
