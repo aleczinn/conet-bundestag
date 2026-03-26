@@ -14,8 +14,25 @@ import { getStoryblokApi } from '@/lib/storyblok';
  */
 export const getStory = cache(async (fullSlug: string) => {
 	const storyblokApi = getStoryblokApi();
+	const version = process.env.NODE_ENV === 'development' ? 'draft' : 'published';
 
 	return storyblokApi.get(`cdn/stories/${fullSlug}`, {
-		version: 'draft' as const,
+		version: version,
+	});
+});
+
+/**
+ * Lädt alle Storyblok Links in einem einzigen Request.
+ * `cache()` dedupliziert den Call innerhalb eines Server-Renders
+ * (z.B. wenn mehrere Komponenten gleichzeitig rendern).
+ * ISR-Revalidierung übernimmt `cachedFetch` in storyblok.ts (60s in prod).
+ */
+export const getLinks = cache(async () => {
+	const storyblokApi = getStoryblokApi();
+	const version = process.env.NODE_ENV === 'development' ? 'draft' : 'published';
+
+	return storyblokApi.get('cdn/links', {
+		// version: 'draft' as const,
+		version: version,
 	});
 });
