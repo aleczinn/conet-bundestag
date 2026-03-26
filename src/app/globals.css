@@ -46,6 +46,7 @@ html {
 body {
     text-rendering: optimizeLegibility;
     text-wrap: pretty;
+    @apply text-gray-90 bg-gray-10;
 }
 
 @layer base {
