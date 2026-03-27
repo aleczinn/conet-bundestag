@@ -32,8 +32,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 		const canonicalUrl = buildCanonicalUrl(BASE_URL, fullSlug);
 		const ogImage = content.seo_og_image?.filename || `${BASE_URL}/og-default.jpg`;
 
+		const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'Deutscher Bundestag';
+		const pageTitle = content.seo_title || data.story.name;
+
 		return {
-			title: content.seo_title || data.story.name,
+			title: pageTitle,
 			description: content.seo_description || '',
 			alternates: {
 				canonical: content.seo_canonical || canonicalUrl,
@@ -43,7 +46,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 				follow: !content.seo_no_index,
 			},
 			openGraph: {
-				title: content.seo_title || data.story.name,
+				title: `${siteName} - ${pageTitle}`,
 				description: content.seo_description || '',
 				url: canonicalUrl,
 				type: content.seo_og_type || 'website',
@@ -51,7 +54,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 			},
 			twitter: {
 				card: 'summary_large_image',
-				title: content.seo_title || data.story.name,
+				title: `${siteName} - ${pageTitle}`,
 				description: content.seo_description || '',
 				images: [ogImage],
 			},
