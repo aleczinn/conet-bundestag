@@ -3,9 +3,10 @@ import { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import StoryblokProvider from '../components/StoryblokProvider';
 import { Footer, Header } from '@/components/layout';
+import { BASE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
-	metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+	metadataBase: new URL(BASE_URL),
 	title: {
 		default: process.env.NEXT_PUBLIC_SITE_NAME || '',
 		template: `${process.env.NEXT_PUBLIC_SITE_NAME || ''} - %s`,
