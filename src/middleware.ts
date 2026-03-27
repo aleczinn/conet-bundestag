@@ -11,7 +11,7 @@ export function middleware(request: NextRequest) {
 		return response;
 	}
 
-	// Kein Locale-Prefix → auf /de umleiten
+	// Kein Locale-Prefix -> auf /DEFAULT_LOCALE umleiten
 	const url = request.nextUrl.clone();
 	url.pathname = `/${DEFAULT_LOCALE}${pathname}`;
 	return NextResponse.redirect(url, { status: 308 });

@@ -71,7 +71,7 @@ export default async function Page({ params }: PageProps) {
 	const pathname = `/${locale}/${fullSlug === 'home' ? '' : fullSlug}`.replace(/\/$/, '') || `/${locale}`;
 
 	// Breadcrumbs
-	const breadcrumbs = await buildBreadcrumbs(pathname);
+	const breadcrumbs = await buildBreadcrumbs(pathname, locale);
 	const schema = buildBreadcrumbSchema(breadcrumbs);
 
 	try {

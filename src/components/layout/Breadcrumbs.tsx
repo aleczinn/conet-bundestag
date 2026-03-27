@@ -2,9 +2,11 @@ import Link from 'next/link';
 import { Container } from '@/components/layout';
 import { getLinks } from '@/lib/storyblok-queries';
 import { BASE_URL } from '@/lib/site';
+import { DEFAULT_LOCALE } from '@/lib/locales';
 
 interface BreadcrumbsProps {
 	pathname: string;
+	locale?: string;
 }
 
 interface BreadcrumbItem {
@@ -18,16 +20,16 @@ interface StoryblokLink {
 	is_folder?: boolean;
 }
 
-export async function buildBreadcrumbs(pathname: string): Promise<BreadcrumbItem[]> {
+export async function buildBreadcrumbs(pathname: string, locale = DEFAULT_LOCALE): Promise<BreadcrumbItem[]> {
 	// Slug aus Pathname ableiten: "/" -> "home", "/a/b" -> "a/b"
-	const rawSlug = pathname.replace(/^\//, '') || 'home';
+	const slugWithoutLocale = pathname.replace(new RegExp(`^\\/${locale}\\/?`), '') || 'home';
 
 	const breadcrumbs: BreadcrumbItem[] = [
-		{ name: 'Startseite', href: '/' },
+		{ name: 'Startseite', href: `/${locale}` },
 	];
 
 	// Startseite hat nur einen Eintrag
-	if (rawSlug === 'home') {
+	if (slugWithoutLocale === 'home') {
 		return breadcrumbs;
 	}
 
@@ -44,12 +46,12 @@ export async function buildBreadcrumbs(pathname: string): Promise<BreadcrumbItem
 
 	// Kumulativen Pfad aufbauen: "a/b/c" -> ["a", "a/b", "a/b/c"]
 	let cumulativePath = '';
-	for (const segment of rawSlug.split('/').filter(Boolean)) {
+	for (const segment of slugWithoutLocale.split('/').filter(Boolean)) {
 		cumulativePath = cumulativePath ? `${cumulativePath}/${segment}` : segment;
 		const name = slugMap.get(cumulativePath);
 
 		if (name) {
-			breadcrumbs.push({ name, href: `/${cumulativePath}` });
+			breadcrumbs.push({ name, href: `/${locale}/${cumulativePath}` });
 		}
 	}
 
@@ -73,9 +75,8 @@ export default async function Breadcrumbs({ pathname }: BreadcrumbsProps) {
 	const breadcrumbs = await buildBreadcrumbs(pathname);
 
 	return (
-		<Container
-			className="h-16 flex flex-row items-center bg-gray-10"
-			aria-label="Brotkrumennavigation"
+		<Container className="h-16 flex flex-row items-center bg-gray-10"
+							 aria-label="Brotkrumennavigation"
 		>
 			<ol className="flex flex-wrap items-center gap-2">
 				{breadcrumbs.map((item, index) => {
@@ -88,15 +89,11 @@ export default async function Breadcrumbs({ pathname }: BreadcrumbsProps) {
 							)}
 
 							{isLast ? (
-								<span className="text-sm font-bold text-gray-90"
-											aria-current="page"
-								>
+								<span className="text-sm font-bold text-gray-90">
 										{item.name}
 									</span>
 							) : (
-								<Link href={item.href}
-											className="text-sm text-gray-90 hover:underline"
-								>
+								<Link href={item.href} className="text-sm text-gray-90 hover:underline">
 									{item.name}
 								</Link>
 							)}
