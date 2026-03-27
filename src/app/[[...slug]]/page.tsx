@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { getStory } from '@/lib/storyblok-queries';
 import { Breadcrumbs } from '@/components/layout';
-import { BASE_URL } from '@/lib/site';
+import { BASE_URL, SITE_NAME } from '@/lib/site';
 import { buildBreadcrumbs, buildBreadcrumbSchema } from '@/components/layout/Breadcrumbs';
 
 interface PageProps {
@@ -22,17 +22,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 	const fullSlug = slug ? slug.join('/') : 'home';
 	const pathname = '/' + (fullSlug === 'home' ? '' : fullSlug);
 
-	// Breadcrumbs
-	const breadcrumbs = await buildBreadcrumbs(pathname);
-	const schema = buildBreadcrumbSchema(breadcrumbs);
-
 	try {
 		const { data } = await getStory(fullSlug);
 		const content = data.story.content;
 		const canonicalUrl = buildCanonicalUrl(BASE_URL, fullSlug);
 		const ogImage = content.seo_og_image?.filename || `${BASE_URL}/og-default.jpg`;
 
-		const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'Deutscher Bundestag';
 		const pageTitle = content.seo_title || data.story.name;
 
 		return {
@@ -46,7 +41,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 				follow: !content.seo_no_index,
 			},
 			openGraph: {
-				title: `${siteName} - ${pageTitle}`,
+				siteName: SITE_NAME,
+				title: `${SITE_NAME} - ${pageTitle}`,
 				description: content.seo_description || '',
 				url: canonicalUrl,
 				type: content.seo_og_type || 'website',
@@ -54,13 +50,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 			},
 			twitter: {
 				card: 'summary_large_image',
-				title: `${siteName} - ${pageTitle}`,
+				title: `${SITE_NAME} - ${pageTitle}`,
 				description: content.seo_description || '',
 				images: [ogImage],
 			},
-			other: {
-				'script:ld+json': JSON.stringify(schema),
-			}
 		};
 	} catch {
 		return {
@@ -75,6 +68,10 @@ export default async function Page({ params }: PageProps) {
 	const fullSlug = slug ? slug.join('/') : 'home';
 	const pathname = '/' + (fullSlug === 'home' ? '' : fullSlug);
 
+	// Breadcrumbs
+	const breadcrumbs = await buildBreadcrumbs(pathname);
+	const schema = buildBreadcrumbSchema(breadcrumbs);
+
 	try {
 		const { data } = await getStory(fullSlug);
 
@@ -84,6 +81,10 @@ export default async function Page({ params }: PageProps) {
 
 		return (
 			<main className="flex-1">
+				<script type="application/ld+json"
+								dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+				/>
+
 				<Breadcrumbs pathname={pathname} />
 				<StoryblokStory story={data.story} />
 			</main>

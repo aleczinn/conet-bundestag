@@ -3,18 +3,14 @@ import { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import StoryblokProvider from '../components/StoryblokProvider';
 import { Footer, Header } from '@/components/layout';
-import { BASE_URL } from '@/lib/site';
+import { BASE_URL, SITE_NAME } from '@/lib/site';
 
 export const metadata: Metadata = {
 	metadataBase: new URL(BASE_URL),
 	title: {
-		default: process.env.NEXT_PUBLIC_SITE_NAME || 'Website',
-		template: `${process.env.NEXT_PUBLIC_SITE_NAME || ''} - %s`,
+		default: SITE_NAME,
+		template: `${SITE_NAME} - %s`,
 	},
-	description: process.env.NEXT_PUBLIC_SITE_DESCRIPTION || 'Beschreibung',
-	openGraph: {
-		siteName: process.env.NEXT_PUBLIC_SITE_NAME || 'Website',
-	}
 };
 
 interface RootLayoutProps {
