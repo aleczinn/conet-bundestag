@@ -7,3 +7,7 @@ export { default as IconSearch } from "./IconSearch";
 export { default as IconSearchSmall } from "./IconSearchSmall";
 export { default as IconMenuOff } from "./IconMenuOff";
 export { default as IconMenuOn } from "./IconMenuOn";
+export { default as IconArrowLeft } from "./IconArrowLeft";
+export { default as IconArrowRight } from "./IconArrowRight";
+export { default as IconButterfly } from "./IconButterfly";
+export { default as IconFacebook } from "./IconFacebook";
