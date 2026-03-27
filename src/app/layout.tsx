@@ -8,12 +8,12 @@ import { BASE_URL } from '@/lib/site';
 export const metadata: Metadata = {
 	metadataBase: new URL(BASE_URL),
 	title: {
-		default: process.env.NEXT_PUBLIC_SITE_NAME || '',
+		default: process.env.NEXT_PUBLIC_SITE_NAME || 'Website',
 		template: `${process.env.NEXT_PUBLIC_SITE_NAME || ''} - %s`,
 	},
-	description: 'Internetseite des Deutschen Bundestages: Informationen über das Parlament und die Abgeordneten, Tagesordnungen, Livestreams und Service-Angebote.',
+	description: process.env.NEXT_PUBLIC_SITE_DESCRIPTION || 'Beschreibung',
 	openGraph: {
-		siteName: process.env.NEXT_PUBLIC_SITE_NAME || 'Deutscher Bundestag',
+		siteName: process.env.NEXT_PUBLIC_SITE_NAME || 'Website',
 	}
 };
 
