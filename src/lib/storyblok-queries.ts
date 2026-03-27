@@ -3,7 +3,7 @@ import { getStoryblokApi } from '@/lib/storyblok';
 
 const getVersion = () => {
 	return process.env.NODE_ENV === 'development' ? 'draft' as const : 'published' as const;
-}
+};
 
 
 /**
@@ -17,11 +17,12 @@ const getVersion = () => {
  *
  * @see https://react.dev/reference/react/cache
  */
-export const getStory = cache(async (fullSlug: string) => {
+export const getStory = cache(async (fullSlug: string, language = 'default') => {
 	const storyblokApi = getStoryblokApi();
 
 	return storyblokApi.get(`cdn/stories/${fullSlug}`, {
 		version: getVersion(),
+		language,
 	});
 });
 
