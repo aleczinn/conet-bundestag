@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 import StoryblokProvider from '../components/StoryblokProvider';
 import { Footer, Header } from '@/components/layout';
 import { BASE_URL, SITE_NAME } from '@/lib/site';
-import { getLocale } from '@/lib/i18n';
+import { getLocale } from '@/lib/i18n/server';
 
 export const metadata: Metadata = {
 	metadataBase: new URL(BASE_URL),

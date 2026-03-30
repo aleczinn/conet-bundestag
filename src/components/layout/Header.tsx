@@ -1,8 +1,6 @@
-import ServiceBar from '@/components/layout/ServiceBar';
-import Container from '@/components/layout/Container';
 import Link from 'next/link';
+import { Container, Navigation , ServiceBar} from '@/components/layout';
 import { IconBundestagDesktop, IconBundestagMobile } from '@/components/icons';
-import Navigation from '@/components/layout/Navigation';
 
 export default function Header() {
 	return (
