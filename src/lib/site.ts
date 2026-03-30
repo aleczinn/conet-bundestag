@@ -4,3 +4,4 @@ export const BASE_URL =
 	'http://localhost:3000';
 
 export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Deutscher Bundestag';
+export const SITE_SHORTCUT = process.env.NEXT_PUBLIC_SITE_SHORTCUT || 'BT';

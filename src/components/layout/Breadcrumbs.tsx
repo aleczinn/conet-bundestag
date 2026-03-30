@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Container } from '@/components/layout';
 import { getLinks } from '@/lib/storyblok-queries';
 import { BASE_URL } from '@/lib/site';
-import { DEFAULT_LOCALE } from '@/lib/locales';
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales';
 
 interface BreadcrumbsProps {
 	pathname: string;
@@ -89,9 +89,9 @@ export default async function Breadcrumbs({ pathname }: BreadcrumbsProps) {
 							)}
 
 							{isLast ? (
-								<span className="text-sm font-bold text-gray-90">
+								<span className="text-sm font-bold text-gray-90" aria-current="page">
 										{item.name}
-									</span>
+								</span>
 							) : (
 								<Link href={item.href} className="text-sm text-gray-90 hover:underline">
 									{item.name}

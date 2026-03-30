@@ -5,7 +5,7 @@ import { getStory } from '@/lib/storyblok-queries';
 import { Breadcrumbs } from '@/components/layout';
 import { BASE_URL, SITE_NAME } from '@/lib/site';
 import { buildBreadcrumbs, buildBreadcrumbSchema } from '@/components/layout/Breadcrumbs';
-import { extractLocaleAndSlug } from '@/lib/locales';
+import { extractLocaleAndSlug } from '@/lib/i18n/locales';
 
 interface PageProps {
 	params: Promise<{

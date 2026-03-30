@@ -1,5 +1,6 @@
 import { cache } from 'react';
 import { getStoryblokApi } from '@/lib/storyblok';
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales';
 
 const getVersion = () => {
 	return process.env.NODE_ENV === 'development' ? 'draft' as const : 'published' as const;
@@ -38,4 +39,19 @@ export const getLinks = cache(async () => {
 	return storyblokApi.get('cdn/links', {
 		version: getVersion(),
 	});
+});
+
+/**
+ * Gibt alle verfügbaren Sprachen zurück, welche in Storyblok-Space hinterlegt sind.
+ */
+export const getLocales = cache(async (): Promise<{ locales: string[]; }> => {
+	try {
+		const storyblokApi = getStoryblokApi();
+		const { data } = await storyblokApi.get('cdn/spaces/me', {});
+
+		const locales = [...(data.space?.language_codes ?? [])];
+		return { locales };
+	} catch {
+		return { locales: [DEFAULT_LOCALE] };
+	}
 });
