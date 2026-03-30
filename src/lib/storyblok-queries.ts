@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { getStoryblokApi } from '@/lib/storyblok';
-import { DEFAULT_LOCALE } from '@/lib/i18n/locales';
+import { DEFAULT_LOCALE } from '@/lib/locale/locales';
 
 const getVersion = () => {
 	return process.env.NODE_ENV === 'development' ? 'draft' as const : 'published' as const;

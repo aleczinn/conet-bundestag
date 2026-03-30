@@ -3,7 +3,7 @@ import {
 	StoryblokServerComponent,
 } from '@storyblok/react/rsc';
 import { SbBlokData } from '@storyblok/react';
-import { Section } from '@/components/layout';
+import Section from '@/components/layout/Section';
 
 interface GridProps {
 	blok: SbBlokData & {

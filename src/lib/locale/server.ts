@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { isValidLocale, type Locale } from './locales';
-import { DEFAULT_LOCALE, LOCALE_COOKIE_NAME } from '@/lib/i18n/locales';
+import { DEFAULT_LOCALE, LOCALE_COOKIE_NAME } from '@/lib/locale/locales';
 
 /**
  * Liest die aktuelle Locale aus dem x-pathname Header (gesetzt von Middleware).

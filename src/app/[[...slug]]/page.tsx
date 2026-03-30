@@ -2,10 +2,9 @@ import { StoryblokStory } from '@storyblok/react/rsc';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { getStory } from '@/lib/storyblok-queries';
-import { Breadcrumbs } from '@/components/layout';
 import { BASE_URL, SITE_NAME } from '@/lib/site';
-import { buildBreadcrumbs, buildBreadcrumbSchema } from '@/components/layout/Breadcrumbs';
-import { extractLocaleAndSlug } from '@/lib/i18n/locales';
+import Breadcrumbs, { buildBreadcrumbs, buildBreadcrumbSchema } from '@/components/layout/Breadcrumbs';
+import { extractLocaleAndSlug } from '@/lib/locale/locales';
 
 interface PageProps {
 	params: Promise<{

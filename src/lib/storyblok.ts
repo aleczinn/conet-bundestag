@@ -1,5 +1,9 @@
 import { apiPlugin, storyblokInit } from '@storyblok/react/rsc';
-import { Feature, Grid, Hero, Page, Teaser } from '@/components/blocks';
+import Page from '@/components/blocks/Page';
+import Feature from '@/components/blocks/Feature';
+import Grid from '@/components/blocks/Grid';
+import Teaser from '@/components/blocks/Teaser';
+import Hero from '@/components/blocks/Hero';
 
 const cachedFetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
 	return fetch(input, {

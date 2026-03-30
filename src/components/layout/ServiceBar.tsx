@@ -1,11 +1,9 @@
-import { Container } from '@/components/layout';
 import Link from 'next/link';
 import { IconEasy, IconGlobe, IconSign } from '@/components/icons';
-import { getLocale } from '@/lib/i18n/server';
+import Container from '@/components/layout/Container';
+import LocaleSwitcher from '@/components/layout/LocaleSwitcher';
 
-export default async function ServiceBar() {
-	const locale = await getLocale();
-
+export default function ServiceBar() {
 	const isGebaerdensprache = false;
 	const isLeichteSprache = false;
 
@@ -43,13 +41,7 @@ export default async function ServiceBar() {
 				{/*</li>*/}
 
 				<li>
-					<button title="Sprachmenü öffnen"
-									aria-label="Sprachmenü öffnen"
-									className="h-full flex flex-row items-center gap-1 text-gray-90 hover:cursor-pointer"
-					>
-						<IconGlobe />
-						<span className="text-sm">{locale.toUpperCase()}</span>
-					</button>
+					<LocaleSwitcher />
 				</li>
 			</ul>
 		</Container>

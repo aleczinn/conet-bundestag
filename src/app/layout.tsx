@@ -2,9 +2,10 @@ import './globals.css';
 import { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import StoryblokProvider from '../components/StoryblokProvider';
-import { Footer, Header } from '@/components/layout';
 import { BASE_URL, SITE_NAME } from '@/lib/site';
-import { getLocale } from '@/lib/i18n/server';
+import { getLocale } from '@/lib/locale/server';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 
 export const metadata: Metadata = {
 	metadataBase: new URL(BASE_URL),

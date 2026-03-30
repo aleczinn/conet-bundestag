@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { DEFAULT_LOCALE, isValidLocale, LOCALE_COOKIE_NAME } from '@/lib/i18n/locales';
+import { DEFAULT_LOCALE, isValidLocale, LOCALE_COOKIE_NAME } from '@/lib/locale/locales';
 
 export function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl;

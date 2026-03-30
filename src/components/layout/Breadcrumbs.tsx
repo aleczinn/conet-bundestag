@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { Container } from '@/components/layout';
 import { getLinks } from '@/lib/storyblok-queries';
 import { BASE_URL } from '@/lib/site';
-import { DEFAULT_LOCALE } from '@/lib/i18n/locales';
+import { DEFAULT_LOCALE } from '@/lib/locale/locales';
+import Container from '@/components/layout/Container';
 
 interface BreadcrumbsProps {
 	pathname: string;
