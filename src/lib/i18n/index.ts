@@ -1,16 +1,13 @@
 import { Locale, LocaleKey, localeMap } from '@/lib/locale/locales';
 import { localeKeys } from '@/lib/locale/locales';
 
-type Translations = Record<string, string>;
+import deDE from './translations/de-DE.json';
+import enUS from './translations/en-US.json';
 
-// Alle Übersetzungen beim Build/Start einmalig laden
-const translationMap: Record<LocaleKey, Translations> = {} as any;
-
-for (const key of localeKeys) {
-	// Dynamic import geht hier nicht synchron – stattdessen require-style
-	// Da die JSONs statisch sind, werden sie vom Bundler inline aufgelöst
-	translationMap[key] = require(`./translations/${key}.json`);
-}
+const translationMap: Record<LocaleKey, Record<string, unknown>> = {
+	'de-DE': deDE,
+	'en-US': enUS,
+};
 
 function resolveLocaleKey(locale: Locale): LocaleKey {
 	const found = localeKeys.find((k) => localeMap[k].urlSegment === locale.urlSegment);
