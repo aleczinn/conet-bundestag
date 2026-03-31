@@ -1,11 +1,20 @@
 import { cache } from 'react';
 import { getStoryblokApi } from '@/lib/storyblok';
 import { DEFAULT_LOCALE } from '@/lib/locale/locales';
+import { draftMode } from 'next/headers';
 
-const getVersion = () => {
-	return process.env.NODE_ENV === 'development' ? 'draft' as const : 'published' as const;
+// const getVersion = () => {
+// 	return process.env.NODE_ENV === 'development' ? 'draft' as const : 'published' as const;
+// };
+
+const getVersion = async () => {
+	if (process.env.NODE_ENV === 'development') {
+		return 'draft' as const;
+	}
+
+	const draft = await draftMode();
+	return draft.isEnabled ? 'draft' as const : 'published' as const;
 };
-
 
 /**
  * Lädt eine Storyblok Story anhand des Slugs.
@@ -20,9 +29,10 @@ const getVersion = () => {
  */
 export const getStory = cache(async (fullSlug: string, language = 'default') => {
 	const storyblokApi = getStoryblokApi();
+	const version = await getVersion();
 
 	return storyblokApi.get(`cdn/stories/${fullSlug}`, {
-		version: getVersion(),
+		version,
 		language,
 	});
 });
@@ -35,9 +45,10 @@ export const getStory = cache(async (fullSlug: string, language = 'default') => 
  */
 export const getLinks = cache(async () => {
 	const storyblokApi = getStoryblokApi();
+	const version = await getVersion();
 
 	return storyblokApi.get('cdn/links', {
-		version: getVersion(),
+		version,
 	});
 });
 
