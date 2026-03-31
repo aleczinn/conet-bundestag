@@ -11,12 +11,9 @@ import {
 	LOCALE_COOKIE_NAME,
 } from '@/lib/locale/locales';
 import { IconGlobe } from '@/components/icons';
-import { useState } from 'react';
 
 export default function LocaleSwitcher() {
 	const pathname = usePathname();
-	const router = useRouter();
-	const [switching, setSwitching] = useState(false);
 
 	const segments = pathname.split('/').filter(Boolean);
 	const firstSegment = segments[0] ?? '';
@@ -33,11 +30,6 @@ export default function LocaleSwitcher() {
 	const nextLocale = localeMap[localeKeys[nextIndex]];
 
 	function switchLocale() {
-		if (switching) {
-			return;
-		}
-		setSwitching(true);
-
 		document.cookie = `${LOCALE_COOKIE_NAME}=${nextLocale.urlSegment};path=/;max-age=${60 * 60 * 24 * 365};samesite=lax`;
 
 		const newSegments = [...segments];
@@ -47,16 +39,11 @@ export default function LocaleSwitcher() {
 			newSegments.unshift(nextLocale.urlSegment);
 		}
 
-		router.push('/' + newSegments.join('/'));
-
-		setTimeout(() => {
-			setSwitching(false);
-		}, 500);
+		window.location.href = '/' + newSegments.join('/');
 	}
 
 	return (
 		<button onClick={switchLocale}
-						disabled={switching}
 						title={`Sprache wechseln zu ${nextLocale.label}`}
 						aria-label={`Sprache wechseln zu ${nextLocale.label}`}
 						className="h-full flex flex-row items-center gap-1 text-gray-90 hover:cursor-pointer"
