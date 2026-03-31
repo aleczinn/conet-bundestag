@@ -39,11 +39,12 @@ export const getStory = cache(async (fullSlug: string, locale: Locale = DEFAULT_
  * (z.B. wenn mehrere Komponenten gleichzeitig rendern).
  * ISR-Revalidierung übernimmt `cachedFetch` in storyblok.ts (60s in prod).
  */
-export const getLinks = cache(async () => {
+export const getLinks = cache(async (locale?: Locale) => {
 	const storyblokApi = getStoryblokApi();
 	const version = await getVersion();
 
 	return storyblokApi.get('cdn/links', {
 		version,
+		...(locale && { language: locale.storyblokCode }),
 	});
 });
