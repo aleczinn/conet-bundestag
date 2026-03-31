@@ -3,6 +3,7 @@ import { getLinks } from '@/lib/storyblok-queries';
 import { BASE_URL } from '@/lib/site';
 import { DEFAULT_LOCALE, extractLocaleAndSlug, Locale } from '@/lib/locale/locales';
 import Container from '@/components/layout/Container';
+import { t } from '@/lib/i18n';
 
 interface BreadcrumbsProps {
 	pathname: string;
@@ -24,12 +25,7 @@ export async function buildBreadcrumbs(pathname: string, locale: Locale): Promis
 	// Slug aus Pathname ableiten: "/" -> "home", "/a/b" -> "a/b"
 	const slugWithoutLocale = pathname.replace(new RegExp(`^\\/${locale}\\/?`), '') || 'home';
 
-	// TODO : Get name with i18n
-	let homeTitle = 'Startseite';
-	if (locale.urlSegment === 'en') {
-		homeTitle = 'Home';
-	}
-
+	const homeTitle = t(locale, 'home');
 	const breadcrumbs: BreadcrumbItem[] = [
 		{ name: homeTitle, href: `/${locale}` },
 	];
