@@ -8,11 +8,16 @@ import {
 	localeKeys,
 	localeMap,
 	DEFAULT_LOCALE,
-	LOCALE_COOKIE_NAME,
+	LOCALE_COOKIE_NAME, Locale,
 } from '@/lib/locale/locales';
 import { IconGlobe } from '@/components/icons';
+import { t } from '@/lib/i18n';
 
-export default function LocaleSwitcher() {
+interface LocaleSwitcherProps {
+	locale: Locale;
+}
+
+export default function LocaleSwitcher({ locale }: LocaleSwitcherProps) {
 	const pathname = usePathname();
 
 	const segments = pathname.split('/').filter(Boolean);
@@ -42,10 +47,12 @@ export default function LocaleSwitcher() {
 		window.location.href = '/' + newSegments.join('/');
 	}
 
+	const titleChangeLanguageTo = t(locale, 'header.change_langauge_to');
+
 	return (
 		<button onClick={switchLocale}
-						title={`Sprache wechseln zu ${nextLocale.label}`}
-						aria-label={`Sprache wechseln zu ${nextLocale.label}`}
+						title={`${titleChangeLanguageTo} ${nextLocale.label}`}
+						aria-label={`${titleChangeLanguageTo} ${nextLocale.label}`}
 						className="h-full flex flex-row items-center gap-1 text-gray-90 hover:cursor-pointer"
 		>
 			<IconGlobe />

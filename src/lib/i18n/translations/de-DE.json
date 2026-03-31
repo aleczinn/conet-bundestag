@@ -1,5 +1,20 @@
 {
     "home": "Startseite",
+    "generic": {
+        "search": "Suche",
+        "menu": "Menü"
+    },
+    "header": {
+        "sign_language": "Gebärdensprache",
+        "simple_language": "Leichte Sprache",
+        "back_to_german": "Zur deutschen Startseite",
+        "navigation": {
+            "flyout": "Flyout-Navigation",
+            "service": "Servicenavigation",
+            "breadcrumb": "Brotkrumennavigation"
+        },
+        "change_langauge_to": "Sprache wechseln zu"
+    },
     "notFound": {
         "title": "Seite nicht gefunden",
         "backhome": "Zurück zur Startseite"

@@ -80,7 +80,7 @@ export default async function Breadcrumbs({ pathname }: BreadcrumbsProps) {
 
 	return (
 		<Container className="h-16 flex flex-row items-center bg-gray-10"
-							 aria-label="Brotkrumennavigation"
+							 aria-label={t(locale, 'header.navigation.breadcrumb')}
 		>
 			<ol className="flex flex-wrap items-center gap-2">
 				{breadcrumbs.map((item, index) => {

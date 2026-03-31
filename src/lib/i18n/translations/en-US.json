@@ -1,5 +1,20 @@
 {
-    "home": "Home",
+    "home": "Homepage",
+    "generic": {
+        "search": "Search",
+        "menu": "Menu"
+    },
+    "header": {
+        "sign_language": "Sign language",
+        "simple_language": "Simple language",
+        "back_to_german": "Back to german",
+        "navigation": {
+            "flyout": "Flyout-Navigation",
+            "service": "Site Navigation",
+            "breadcrumb": "Breadcrumb navigation"
+        },
+        "change_langauge_to": "Change language to"
+    },
     "notFound": {
         "title": "Page not found",
         "backhome": "Back to homepage"
