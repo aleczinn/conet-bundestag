@@ -13,6 +13,7 @@ import {
 	localeKeys,
 	localeMap,
 } from '@/lib/locale/locales';
+import { t } from '@/lib/i18n';
 
 interface PageProps {
 	params: Promise<{
@@ -78,7 +79,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 		};
 	} catch {
 		return {
-			title: 'Seite nicht gefunden',
+			title: t(locale, '404.title'),
 			robots: { index: false, follow: false },
 		};
 	}

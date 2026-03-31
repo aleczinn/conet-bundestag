@@ -15,7 +15,7 @@
         },
         "change_langauge_to": "Change language to"
     },
-    "notFound": {
+    "404": {
         "title": "Page not found",
         "backhome": "Back to homepage"
     }

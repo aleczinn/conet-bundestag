@@ -4,8 +4,8 @@ import { t } from '@/lib/i18n';
 export default async function NotFound() {
 	const locale = await getServerLocale();
 
-	const headlineTitle = t(locale, 'notFound.title');
-	const linkTitle = t(locale, 'notFound.backhome');
+	const headlineTitle = t(locale, '404.title');
+	const linkTitle = t(locale, '404.backhome');
 
 	return (
 		<main className="flex-1 flex flex-col justify-center items-center">
