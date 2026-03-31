@@ -111,10 +111,6 @@ export default async function Page({ params }: PageProps) {
 			</main>
 		);
 	} catch (error) {
-		if (process.env.NODE_ENV === 'development') {
-			console.error('[DEV] Storyblok error:', error);
-		}
-
 		return notFound();
 	}
 }
