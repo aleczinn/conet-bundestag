@@ -23,11 +23,12 @@ interface StoryblokLink {
 
 export async function buildBreadcrumbs(pathname: string, locale: Locale): Promise<BreadcrumbItem[]> {
 	// Slug aus Pathname ableiten: "/" -> "home", "/a/b" -> "a/b"
-	const slugWithoutLocale = pathname.replace(new RegExp(`^\\/${locale}\\/?`), '') || 'home';
+	const segment = locale.urlSegment;
+	const slugWithoutLocale = pathname.replace(new RegExp(`^\\/${segment}\\/?`), '') || 'home';
 
 	const homeTitle = t(locale, 'home');
 	const breadcrumbs: BreadcrumbItem[] = [
-		{ name: homeTitle, href: `/${locale}` },
+		{ name: homeTitle, href: `/${segment}` },
 	];
 
 	// Startseite hat nur einen Eintrag
