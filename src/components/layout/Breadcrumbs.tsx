@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getLinks } from '@/lib/storyblok-queries';
 import { BASE_URL } from '@/lib/site';
-import { DEFAULT_LOCALE } from '@/lib/locale/locales';
+import { DEFAULT_LOCALE, extractLocaleAndSlug, Locale } from '@/lib/locale/locales';
 import Container from '@/components/layout/Container';
 
 interface BreadcrumbsProps {
@@ -20,12 +20,18 @@ interface StoryblokLink {
 	is_folder?: boolean;
 }
 
-export async function buildBreadcrumbs(pathname: string, locale = DEFAULT_LOCALE): Promise<BreadcrumbItem[]> {
+export async function buildBreadcrumbs(pathname: string, locale: Locale): Promise<BreadcrumbItem[]> {
 	// Slug aus Pathname ableiten: "/" -> "home", "/a/b" -> "a/b"
 	const slugWithoutLocale = pathname.replace(new RegExp(`^\\/${locale}\\/?`), '') || 'home';
 
+	// TODO : Get name with i18n
+	let homeTitle = 'Startseite';
+	if (locale.urlSegment === 'en') {
+		homeTitle = 'Home';
+	}
+
 	const breadcrumbs: BreadcrumbItem[] = [
-		{ name: 'Startseite', href: `/${locale}` },
+		{ name: homeTitle, href: `/${locale}` },
 	];
 
 	// Startseite hat nur einen Eintrag
@@ -37,7 +43,6 @@ export async function buildBreadcrumbs(pathname: string, locale = DEFAULT_LOCALE
 	const links: Record<string, StoryblokLink> = data.links;
 
 	const slugMap = new Map<string, string>();
-
 	Object.values(links).forEach((link) => {
 		if (link.slug && link.name) {
 			slugMap.set(link.slug, link.name);
@@ -51,7 +56,7 @@ export async function buildBreadcrumbs(pathname: string, locale = DEFAULT_LOCALE
 		const name = slugMap.get(cumulativePath);
 
 		if (name) {
-			breadcrumbs.push({ name, href: `/${locale}/${cumulativePath}` });
+			breadcrumbs.push({ name, href: `/${locale.urlSegment}/${cumulativePath}` });
 		}
 	}
 
@@ -72,7 +77,9 @@ export function buildBreadcrumbSchema(breadcrumbs: BreadcrumbItem[]) {
 }
 
 export default async function Breadcrumbs({ pathname }: BreadcrumbsProps) {
-	const breadcrumbs = await buildBreadcrumbs(pathname);
+	const segments = pathname.split('/').filter(Boolean);
+	const { locale } = extractLocaleAndSlug(segments);
+	const breadcrumbs = await buildBreadcrumbs(pathname, locale);
 
 	return (
 		<Container className="h-16 flex flex-row items-center bg-gray-10"
