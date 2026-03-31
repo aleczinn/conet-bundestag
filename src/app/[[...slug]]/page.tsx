@@ -112,7 +112,7 @@ export default async function Page({ params }: PageProps) {
 		);
 	} catch (error) {
 		if (process.env.NODE_ENV === 'development') {
-			console.error('Storyblok error:', error);
+			console.error('[DEV] Storyblok error:', error);
 		}
 
 		return notFound();
