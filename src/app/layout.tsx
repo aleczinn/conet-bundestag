@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import StoryblokProvider from '../components/StoryblokProvider';
 import { BASE_URL, SITE_NAME } from '@/lib/site';
-import { getLocale } from '@/lib/locale/server';
+import { getServerLocale } from '@/lib/locale/server';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 
@@ -20,11 +20,11 @@ interface RootLayoutProps {
 }
 
 export default async function RootLayout({ children }: RootLayoutProps) {
-	const locale = await getLocale();
+	const locale = await getServerLocale();
 
 	return (
 		<StoryblokProvider>
-			<html lang={locale}>
+			<html lang={locale.urlSegment}>
 				<body className="bg-white subpixel-antialiased flex flex-col w-full min-h-screen">
 					<Header/>
 					{children}

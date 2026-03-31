@@ -1,18 +1,36 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { isValidLocale, LOCALE_COOKIE_NAME, type Locale } from '@/lib/locale/locales';
+import {
+	isValidLocaleSegment,
+	getLocaleKeyFromSegment,
+	getLocale,
+	localeKeys,
+	localeMap,
+	DEFAULT_LOCALE,
+	LOCALE_COOKIE_NAME,
+} from '@/lib/locale/locales';
 import { IconGlobe } from '@/components/icons';
 import { useState } from 'react';
 
 export default function LocaleSwitcher() {
 	const pathname = usePathname();
 	const router = useRouter();
+	const [switching, setSwitching] = useState(false);
 
 	const segments = pathname.split('/').filter(Boolean);
-	const currentLocale: Locale = isValidLocale(segments[0]) ? segments[0] : 'de';
+	const firstSegment = segments[0] ?? '';
 
-	const [switching, setSwitching] = useState(false);
+	const localeKey = isValidLocaleSegment(firstSegment)
+		? getLocaleKeyFromSegment(firstSegment)
+		: undefined;
+
+	const currentLocale = localeKey ? getLocale(localeKey) : DEFAULT_LOCALE;
+
+	// Nächste Locale im Zyklus (funktioniert mit 2+ Sprachen)
+	const currentIndex = localeKeys.findIndex((k) => localeMap[k].urlSegment === currentLocale.urlSegment);
+	const nextIndex = (currentIndex + 1) % localeKeys.length;
+	const nextLocale = localeMap[localeKeys[nextIndex]];
 
 	function switchLocale() {
 		if (switching) {
@@ -20,16 +38,13 @@ export default function LocaleSwitcher() {
 		}
 		setSwitching(true);
 
-		const newLocale: Locale = currentLocale === 'de' ? 'en' : 'de';
+		document.cookie = `${LOCALE_COOKIE_NAME}=${nextLocale.urlSegment};path=/;max-age=${60 * 60 * 24 * 365};samesite=lax`;
 
-		document.cookie = `${LOCALE_COOKIE_NAME}=${newLocale};path=/;max-age=${60 * 60 * 24 * 365};samesite=lax`;
-
-		// Locale-Segment in URL tauschen
 		const newSegments = [...segments];
-		if (isValidLocale(newSegments[0])) {
-			newSegments[0] = newLocale;
+		if (isValidLocaleSegment(newSegments[0])) {
+			newSegments[0] = nextLocale.urlSegment;
 		} else {
-			newSegments.unshift(newLocale);
+			newSegments.unshift(nextLocale.urlSegment);
 		}
 
 		router.push('/' + newSegments.join('/'));
@@ -41,12 +56,13 @@ export default function LocaleSwitcher() {
 
 	return (
 		<button onClick={switchLocale}
-						title={`Sprache wechseln zu ${currentLocale === 'de' ? 'English' : 'Deutsch'}`}
-						aria-label={`Sprache wechseln zu ${currentLocale === 'de' ? 'English' : 'Deutsch'}`}
+						disabled={switching}
+						title={`Sprache wechseln zu ${nextLocale.label}`}
+						aria-label={`Sprache wechseln zu ${nextLocale.label}`}
 						className="h-full flex flex-row items-center gap-1 text-gray-90 hover:cursor-pointer"
 		>
 			<IconGlobe />
-			<span className="text-sm">{currentLocale.toUpperCase()}</span>
+			<span className="text-sm">{currentLocale.urlSegment.toUpperCase()}</span>
 		</button>
 	);
 }
