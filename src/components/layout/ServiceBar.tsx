@@ -50,7 +50,6 @@ export default function ServiceBar({ locale }: ServiceBarProps) {
 				</li>
 
 				<li>
-					<div>{locale.storyblokCode}</div>
 					<LocaleSwitcher locale={locale} />
 				</li>
 			</ul>
