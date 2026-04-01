@@ -61,3 +61,13 @@ body {
         }
     }
 }
+
+@layer components {
+    .bt-link {
+        @apply text-sm text-gray-90 hover:underline;
+    }
+
+    .bt-link-bold {
+        @apply font-bold text-sm text-gray-90 hover:underline;
+    }
+}
