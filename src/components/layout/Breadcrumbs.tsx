@@ -22,8 +22,7 @@ interface StoryblokLink {
 }
 
 async function buildBreadcrumbs(locale: Locale, slug: string): Promise<BreadcrumbItem[]> {
-	// Slug aus Pathname ableiten: "/" -> "home", "/a/b" -> "a/b"
-	const segment = locale.urlSegment;
+	const segment = locale.language;
 
 	const homeTitle = t(locale, 'home');
 	const breadcrumbs: BreadcrumbItem[] = [
@@ -51,7 +50,7 @@ async function buildBreadcrumbs(locale: Locale, slug: string): Promise<Breadcrum
 		const name = slugMap.get(cumulativePath);
 
 		if (name) {
-			breadcrumbs.push({ name, href: `/${locale.urlSegment}/${cumulativePath}` });
+			breadcrumbs.push({ name, href: `/${locale.language}/${cumulativePath}` });
 		}
 	}
 
