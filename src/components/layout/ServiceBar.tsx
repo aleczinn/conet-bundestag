@@ -12,6 +12,7 @@ interface ServiceBarProps {
 export default function ServiceBar({ locale }: ServiceBarProps) {
 	const isGebaerdensprache = false;
 	const isLeichteSprache = false;
+	const isPageGerman = locale.language === 'de';
 
 	const titleSignLanguage = t(locale, 'header.sign_language');
 	const titleSimpleLanguage = t(locale, 'header.simple_language');
@@ -20,34 +21,40 @@ export default function ServiceBar({ locale }: ServiceBarProps) {
 	return (
 		<Container as="nav" className="h-10 bg-gray-10" aria-label="Servicenavigation">
 			<ul className="h-full flex flex-row justify-end items-center gap-8">
-				<li>
-					<Link href="/gebaerdensprache"
-								title={titleSignLanguage}
-								className="h-full flex flex-row items-center gap-1 text-gray-90 hover:cursor-pointer"
-					>
-						<IconSign />
-						<span className="hidden md:block text-sm underlineAnimation">{titleSignLanguage}</span>
-					</Link>
-				</li>
+				{(isPageGerman || isLeichteSprache) && (
+					<li>
+						<Link href="/gebaerdensprache"
+									title={titleSignLanguage}
+									className="h-full flex flex-row items-center gap-1 text-gray-90 hover:cursor-pointer"
+						>
+							<IconSign />
+							<span className="hidden md:block text-sm underlineAnimation">{titleSignLanguage}</span>
+						</Link>
+					</li>
+				)}
 
-				<li>
-					<Link href="/leichte_sprache"
-								title={titleSimpleLanguage}
-								className="h-full flex flex-row items-center gap-1 text-gray-90 hover:cursor-pointer"
-					>
-						<IconEasy />
-						<span className="hidden md:block text-sm underlineAnimation">{titleSimpleLanguage}</span>
-					</Link>
-				</li>
+				{(isPageGerman || isGebaerdensprache) && (
+					<li>
+						<Link href="/leichte_sprache"
+									title={titleSimpleLanguage}
+									className="h-full flex flex-row items-center gap-1 text-gray-90 hover:cursor-pointer"
+						>
+							<IconEasy />
+							<span className="hidden md:block text-sm underlineAnimation">{titleSimpleLanguage}</span>
+						</Link>
+					</li>
+				)}
 
-				<li>
-					<Link href="/"
-								title={titleBackToGerman}
-								className="h-full flex flex-row items-center gap-1 text-gray-90 hover:cursor-pointer"
-					>
-						<span className="hidden md:block text-sm underlineAnimation">{titleBackToGerman}</span>
-					</Link>
-				</li>
+				{(!isPageGerman || isGebaerdensprache || isLeichteSprache) && (
+					<li>
+						<Link href="/de"
+									title={titleBackToGerman}
+									className="h-full flex flex-row items-center gap-1 text-gray-90 hover:cursor-pointer"
+						>
+							<span className="hidden md:block text-sm underlineAnimation">{titleBackToGerman}</span>
+						</Link>
+					</li>
+				)}
 
 				<li>
 					<LocaleSwitcher locale={locale} />
