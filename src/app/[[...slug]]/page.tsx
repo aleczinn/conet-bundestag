@@ -101,7 +101,7 @@ export default async function Page({ params }: PageProps) {
 		}
 
 		return (
-			<main className="flex-1 bg-white">
+			<main className="flex-1">
 				<Breadcrumbs locale={locale} slug={contentSlug} items={breadcrumbs} includeSchema={true} />
 				<StoryblokStory story={data.story} />
 				<Breadcrumbs locale={locale} slug={contentSlug} items={breadcrumbs} />
