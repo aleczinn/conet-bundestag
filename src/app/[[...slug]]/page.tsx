@@ -8,9 +8,7 @@ import {
 	DEFAULT_LOCALE,
 	getAlternateOgLocales,
 	getOgLocale,
-	Locale,
-	localeKeys,
-	localeMap,
+	Locale, locales, toLocaleTag,
 } from '@/lib/locale/locales';
 import { t } from '@/lib/i18n';
 import { getServerLocale } from '@/lib/locale/server';
@@ -23,30 +21,30 @@ interface PageProps {
 
 function buildCanonicalUrl(locale: Locale, fullSlug: string): string {
 	const path = fullSlug === 'home' ? '' : fullSlug;
-	return `${BASE_URL}/${locale.urlSegment}/${path}`.replace(/\/+$/, '');
+	return `${BASE_URL}/${locale.language}/${path}`.replace(/\/+$/, '');
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
 	const { slug } = await params;
-	const slugWithoutLocale = extractContentSlug(slug);
+	const contentSlug = extractContentSlug(slug);
 
 	const locale = await getServerLocale();
-	const localeKey = 'de-DE'; // TODO : adjust
 
 	try {
-		const { data } = await getStory(locale, slugWithoutLocale);
+		const { data } = await getStory(locale, contentSlug);
 		const content = data.story.content;
-		const canonicalUrl = buildCanonicalUrl(locale, slugWithoutLocale);
+		const canonicalUrl = buildCanonicalUrl(locale, contentSlug);
 		const ogImage = content.seo_og_image?.filename || `${BASE_URL}/og-default.jpg`;
 		const pageTitle = content.seo_title || data.story.name;
 
 		// hreflang URLs für alle Locales + x-default
+		const path = contentSlug === 'home' ? '' : contentSlug;
 		const languages: Record<string, string> = {
-			'x-default': `${BASE_URL}/${DEFAULT_LOCALE.urlSegment}/${slugWithoutLocale}`.replace(/\/+$/, ''),
+			'x-default': `${BASE_URL}/${DEFAULT_LOCALE.language}/${path}`.replace(/\/+$/, ''),
 			...Object.fromEntries(
-				localeKeys.map((key) => [
-					key.toLowerCase(),
-					`${BASE_URL}/${localeMap[key].urlSegment}/${slugWithoutLocale}`.replace(/\/+$/, ''),
+				locales.map((l) => [
+					toLocaleTag(l).toLowerCase(),
+					`${BASE_URL}/${l.language}/${path}`.replace(/\/+$/, ''),
 				]),
 			),
 		};
@@ -63,8 +61,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 				follow: !content.seo_no_index,
 			},
 			openGraph: {
-				locale: getOgLocale(localeKey),
-				alternateLocale: getAlternateOgLocales(localeKey),
+				locale: getOgLocale(locale),
+				alternateLocale: getAlternateOgLocales(locale),
 				siteName: SITE_NAME,
 				title: `${SITE_NAME} - ${pageTitle}`,
 				description: content.seo_description || '',
@@ -89,11 +87,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function Page({ params }: PageProps) {
 	const { slug } = await params;
-	const slugWithoutLocale = extractContentSlug(slug);
+	const contentSlug = extractContentSlug(slug);
 	const locale = await getServerLocale();
 
 	try {
-		const { data } = await getStory(locale, slugWithoutLocale);
+		const { data } = await getStory(locale, contentSlug);
 
 		if (!data?.story) {
 			return notFound();
@@ -101,7 +99,7 @@ export default async function Page({ params }: PageProps) {
 
 		return (
 			<main className="flex-1">
-				<Breadcrumbs locale={locale} slug={slugWithoutLocale} />
+				<Breadcrumbs locale={locale} slug={contentSlug} />
 				<StoryblokStory story={data.story} />
 			</main>
 		);

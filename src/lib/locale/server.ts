@@ -1,45 +1,55 @@
 import { cookies, headers } from 'next/headers';
 import {
-	COOKIE_LOCALE_KEY,
-	COOKIE_LOCALE_SEGMENT,
+	COOKIE_LOCALE,
 	DEFAULT_LOCALE,
-	getLocale,
-	getLocaleKeyFromSegment,
-	localeMap,
-	type Locale,
-	type LocaleKey,
-} from './locales';
+	findByTag,
+	getDefaultForLanguage,
+	Locale,
+} from '@/lib/locale/locales';
 
 /**
- * Liest die aktuelle Locale – nutzt den vom Proxy gesetzten x-locale-key
- * (enthält die regionale Variante, z.B. 'de-AT'), mit Fallbacks auf
- * URL-Segment und Cookie.
+ * Liest die aktuelle Locale aus Header → Cookie → Default.
+ *
+ * Der Proxy setzt x-locale-tag mit der exakten regionalen Variante
+ * (z.B. 'de-AT'). Fallbacks greifen auf URL-Segment und Cookie zurück.
  */
 export async function getServerLocale(): Promise<Locale> {
 	const headersList = await headers();
 
-	// Exakter LocaleKey aus Proxy (enthält regionale Variante)
-	const localeKey = headersList.get('x-locale-key') as LocaleKey | null;
-	if (localeKey && localeMap[localeKey]) {
-		return localeMap[localeKey];
+	// Exakter Tag vom Proxy (enthält regionale Variante)
+	const tag = headersList.get('x-locale-tag');
+	if (tag) {
+		const locale = findByTag(tag);
+		if (locale) {
+			return locale;
+		}
 	}
 
-	// URL-basiert (Default für das Segment)
+	// URL-Segment aus Proxy-Header
 	const pathname = headersList.get('x-pathname');
 	if (pathname) {
-		const segment = pathname.split('/').filter(Boolean)[0];
-		const key = getLocaleKeyFromSegment(segment);
-		if (key) return getLocale(key);
+		const language = pathname.split('/').filter(Boolean)[0];
+		const locale = getDefaultForLanguage(language);
+		if (locale) {
+			return locale;
+		}
 	}
 
 	// Cookie
 	const cookieStore = await cookies();
-	const cookieKey = cookieStore.get(COOKIE_LOCALE_KEY)?.value as LocaleKey | undefined;
-	if (cookieKey && localeMap[cookieKey]) {
-		return localeMap[cookieKey];
+	const cookieTag = cookieStore.get(COOKIE_LOCALE)?.value;
+	if (cookieTag) {
+		const locale = findByTag(cookieTag);
+		if (locale) {
+			return locale;
+		}
+
+		// Cookie enthält nur die language (z.B. 'de' nach Migration)
+		const fallback = getDefaultForLanguage(cookieTag);
+		if (fallback) {
+			return fallback;
+		}
 	}
 
-	const segment = cookieStore.get(COOKIE_LOCALE_SEGMENT)?.value;
-	const key = segment ? getLocaleKeyFromSegment(segment) : undefined;
-	return key ? getLocale(key) : DEFAULT_LOCALE;
+	return DEFAULT_LOCALE;
 }

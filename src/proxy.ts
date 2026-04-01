@@ -1,56 +1,51 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
-	COOKIE_LOCALE_KEY,
-	COOKIE_LOCALE_SEGMENT,
+	COOKIE_LOCALE,
 	DEFAULT_LOCALE,
-	isValidLocaleSegment,
-	type LocaleKey,
-	localeMap,
-	resolveLocaleKey,
+	findByTag,
+	isValidLanguage,
+	resolveLocale,
+	toLocaleTag,
 } from '@/lib/locale/locales';
 
 export function proxy(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 	const segments = pathname.split('/').filter(Boolean);
-	const firstSegment = segments[0];
+	const language = segments[0];
 
-	if (isValidLocaleSegment(firstSegment)) {
+	if (isValidLanguage(language)) {
 		const response = NextResponse.next();
 		response.headers.set('x-pathname', pathname);
 
-		// Regionale Variante: Cookie hat Vorrang, sonst Accept-Language
-		const cookieKey = request.cookies.get(COOKIE_LOCALE_KEY)?.value;
-		const localeKey =
-			cookieKey && localeMap[cookieKey as LocaleKey]?.urlSegment === firstSegment
-				? cookieKey
-				: resolveLocaleKey(firstSegment, request.headers.get('accept-language') ?? '');
+		// Bestehenden Cookie prüfen, sonst Accept-Language
+		const cookieTag = request.cookies.get(COOKIE_LOCALE)?.value;
+		const existing = cookieTag ? findByTag(cookieTag) : undefined;
 
-		if (localeKey) {
-			response.headers.set('x-locale-key', localeKey);
-			response.cookies.set(COOKIE_LOCALE_KEY, localeKey, {
+		const locale =
+			existing?.language === language
+				? existing
+				: resolveLocale(language, request.headers.get('accept-language') ?? '');
+
+		if (locale) {
+			const tag = toLocaleTag(locale);
+			response.headers.set('x-locale-tag', tag);
+			response.cookies.set(COOKIE_LOCALE, tag, {
 				maxAge: 60 * 60 * 24 * 365,
 				path: '/',
 				sameSite: 'lax',
 			});
 		}
 
-		response.cookies.set(COOKIE_LOCALE_SEGMENT, firstSegment, {
-			maxAge: 60 * 60 * 24 * 365,
-			path: '/',
-			sameSite: 'lax',
-		});
-
 		return response;
 	}
 
-	// Keine Locale in URL -> Redirect zum richtigen Segment
-	const cookieSegment = request.cookies.get(COOKIE_LOCALE_SEGMENT)?.value;
-	const targetSegment = isValidLocaleSegment(cookieSegment)
-		? cookieSegment
-		: DEFAULT_LOCALE.urlSegment;
+	// Kein gültiges Segment → Redirect
+	const cookieTag = request.cookies.get(COOKIE_LOCALE)?.value;
+	const fallback = cookieTag ? findByTag(cookieTag) : undefined;
+	const targetLanguage = fallback?.language ?? DEFAULT_LOCALE.language;
 
 	const url = request.nextUrl.clone();
-	url.pathname = `/${targetSegment}${pathname}`;
+	url.pathname = `/${targetLanguage}${pathname}`;
 	return NextResponse.redirect(url, { status: 307 });
 }
 

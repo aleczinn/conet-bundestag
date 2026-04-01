@@ -1,20 +1,24 @@
 import {
-	type Locale,
-	type LocaleKey,
-	localeKeys,
-	localeMap,
-	segmentDefaults,
+	DEFAULT_LOCALE,
+	locales,
+	getDefaultForLanguage,
+	toLocaleTag,
+	Locale,
 } from '@/lib/locale/locales';
 
 /**
  * Translations dynamisch laden – neue JSON-Dateien werden automatisch erkannt,
  * kein manueller Import nötig. Fehlende Dateien werden übersprungen.
+ *
+ * Dateinamen entsprechen dem Locale-Tag: de-DE.json, de-AT.json, en-US.json
  */
-const translationMap: Partial<Record<LocaleKey, Record<string, unknown>>> = {};
+const translationMap = new Map<string, Record<string, unknown>>();
 
-for (const key of localeKeys) {
+for (const locale of locales) {
+	const tag = toLocaleTag(locale);
+
 	try {
-		translationMap[key] = require(`./translations/${key}.json`);
+		translationMap.set(tag, require(`./translations/${tag}.json`));
 	} catch {
 		// Keine JSON für diese Locale -> Fallback greift
 	}
@@ -29,52 +33,43 @@ function resolve(obj: Record<string, unknown>, key: string): string | undefined 
 	return typeof current === 'string' ? current : undefined;
 }
 
-function findLocaleKey(locale: Locale): LocaleKey | undefined {
-	return localeKeys.find(
-		(k) =>
-			localeMap[k].urlSegment === locale.urlSegment &&
-			localeMap[k].storyblokCode === locale.storyblokCode,
-	);
-}
-
 /**
  * Übersetzt einen Key für die gegebene Locale.
  *
  * Fallback-Kette:
  *   1. Exakte Locale (z.B. de-AT.json)
- *   2. Segment-Default (z.B. de-DE.json als Fallback für alle /de/-Varianten)
- *   3. App-Default (erster Eintrag in localeKeys, normalerweise de-DE)
+ *   2. Sprach-Default (z.B. de-DE.json als Fallback für alle /de/-Varianten)
+ *   3. App-Default (erster Eintrag in locales, normalerweise de-DE)
  *   4. Key selbst (macht fehlende Übersetzungen sofort sichtbar)
  */
 export function t(locale: Locale, key: string): string {
-	const localeKey = findLocaleKey(locale);
+	const tag = toLocaleTag(locale);
 
 	// Exakte Locale
-	if (localeKey && translationMap[localeKey]) {
-		const value = resolve(translationMap[localeKey]!, key);
-		if (value) {
-			return value;
-		}
+	const exact = translationMap.get(tag);
+	if (exact) {
+		const value = resolve(exact, key);
+		if (value) return value;
 	}
 
-	// Segment-Default (de-AT -> de-DE)
-	const fallbackKey = segmentDefaults[locale.urlSegment];
-	if (fallbackKey && fallbackKey !== localeKey && translationMap[fallbackKey]) {
-		const value = resolve(translationMap[fallbackKey]!, key);
-		if (value) {
-			return value;
+	// Sprach-Default (de-AT → de-DE)
+	const langDefault = getDefaultForLanguage(locale.language);
+	if (langDefault && langDefault !== locale) {
+		const fallback = translationMap.get(toLocaleTag(langDefault));
+		if (fallback) {
+			const value = resolve(fallback, key);
+			if (value) return value;
 		}
 	}
 
 	// App-Default
-	const defaultKey = localeKeys[0];
-	if (defaultKey !== fallbackKey && defaultKey !== localeKey && translationMap[defaultKey]) {
-		const value = resolve(translationMap[defaultKey]!, key);
-		if (value) {
-			return value;
+	if (DEFAULT_LOCALE !== locale && DEFAULT_LOCALE !== langDefault) {
+		const appDefault = translationMap.get(toLocaleTag(DEFAULT_LOCALE));
+		if (appDefault) {
+			const value = resolve(appDefault, key);
+			if (value) return value;
 		}
 	}
 
-	// Key selbst
 	return key;
 }
