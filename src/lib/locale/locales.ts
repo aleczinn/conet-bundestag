@@ -102,27 +102,3 @@ export function getOgLocale(key: LocaleKey): string {
 export function getAlternateOgLocales(key: LocaleKey): string[] {
 	return localeKeys.filter((k) => k !== key).map(getOgLocale);
 }
-
-export function extractLocaleAndSlug(slug?: string[]): {
-	localeKey: LocaleKey;
-	locale: Locale;
-	fullSlug: string;
-} {
-	const first = slug?.[0] ?? '';
-	const localeKey = getLocaleKeyFromSegment(first);
-
-	if (localeKey) {
-		const rest = slug!.slice(1);
-		return {
-			localeKey,
-			locale: localeMap[localeKey],
-			fullSlug: rest.length > 0 ? rest.join('/') : 'home',
-		};
-	}
-
-	return {
-		localeKey: DEFAULT_LOCALE_KEY,
-		locale: DEFAULT_LOCALE,
-		fullSlug: slug?.join('/') || 'home',
-	};
-}

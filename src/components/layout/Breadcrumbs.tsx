@@ -1,13 +1,13 @@
 import Link from 'next/link';
 import { getLinks } from '@/lib/storyblok-queries';
 import { BASE_URL } from '@/lib/site';
-import { DEFAULT_LOCALE, extractLocaleAndSlug, Locale } from '@/lib/locale/locales';
+import { Locale } from '@/lib/locale/locales';
 import Container from '@/components/layout/Container';
 import { t } from '@/lib/i18n';
 
 interface BreadcrumbsProps {
-	pathname: string;
-	locale?: string;
+	locale: Locale;
+	slug: string;
 }
 
 interface BreadcrumbItem {
@@ -21,18 +21,16 @@ interface StoryblokLink {
 	is_folder?: boolean;
 }
 
-export async function buildBreadcrumbs(pathname: string, locale: Locale): Promise<BreadcrumbItem[]> {
+async function buildBreadcrumbs(locale: Locale, slug: string): Promise<BreadcrumbItem[]> {
 	// Slug aus Pathname ableiten: "/" -> "home", "/a/b" -> "a/b"
 	const segment = locale.urlSegment;
-	const slugWithoutLocale = pathname.replace(new RegExp(`^\\/${segment}\\/?`), '') || 'home';
 
 	const homeTitle = t(locale, 'home');
 	const breadcrumbs: BreadcrumbItem[] = [
 		{ name: homeTitle, href: `/${segment}` },
 	];
 
-	// Startseite hat nur einen Eintrag
-	if (slugWithoutLocale === 'home') {
+	if (slug === 'home') {
 		return breadcrumbs;
 	}
 
@@ -48,7 +46,7 @@ export async function buildBreadcrumbs(pathname: string, locale: Locale): Promis
 
 	// Kumulativen Pfad aufbauen: "a/b/c" -> ["a", "a/b", "a/b/c"]
 	let cumulativePath = '';
-	for (const segment of slugWithoutLocale.split('/').filter(Boolean)) {
+	for (const segment of slug.split('/').filter(Boolean)) {
 		cumulativePath = cumulativePath ? `${cumulativePath}/${segment}` : segment;
 		const name = slugMap.get(cumulativePath);
 
@@ -60,7 +58,7 @@ export async function buildBreadcrumbs(pathname: string, locale: Locale): Promis
 	return breadcrumbs;
 }
 
-export function buildBreadcrumbSchema(breadcrumbs: BreadcrumbItem[]) {
+function buildBreadcrumbSchema(breadcrumbs: BreadcrumbItem[]) {
 	return {
 		'@context': 'https://schema.org',
 		'@type': 'BreadcrumbList',
@@ -73,38 +71,43 @@ export function buildBreadcrumbSchema(breadcrumbs: BreadcrumbItem[]) {
 	};
 }
 
-export default async function Breadcrumbs({ pathname }: BreadcrumbsProps) {
-	const segments = pathname.split('/').filter(Boolean);
-	const { locale } = extractLocaleAndSlug(segments);
-	const breadcrumbs = await buildBreadcrumbs(pathname, locale);
+export default async function Breadcrumbs({ locale, slug }: BreadcrumbsProps) {
+	const breadcrumbs = await buildBreadcrumbs(locale, slug);
+	const breadcrumbsSchema = buildBreadcrumbSchema(breadcrumbs);
 
 	return (
-		<Container className="h-16 flex flex-row items-center bg-gray-10"
-							 aria-label={t(locale, 'header.navigation.breadcrumb')}
-		>
-			<ol className="flex flex-wrap items-center gap-2">
-				{breadcrumbs.map((item, index) => {
-					const isLast = index === breadcrumbs.length - 1;
+		<>
+			<script type="application/ld+json"
+							dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsSchema) }}
+			/>
 
-					return (
-						<li key={item.href} className="flex items-center gap-2">
-							{index > 0 && (
-								<span className="text-sm text-gray-40" aria-hidden="true">|</span>
-							)}
+			<Container className="h-16 flex flex-row items-center bg-gray-10"
+								 aria-label={t(locale, 'header.navigation.breadcrumb')}
+			>
+				<ol className="flex flex-wrap items-center gap-2">
+					{breadcrumbs.map((item, index) => {
+						const isLast = index === breadcrumbs.length - 1;
 
-							{isLast ? (
-								<span className="text-sm font-bold text-gray-90" aria-current="page">
+						return (
+							<li key={item.href} className="flex items-center gap-2">
+								{index > 0 && (
+									<span className="text-sm text-gray-40" aria-hidden="true">|</span>
+								)}
+
+								{isLast ? (
+									<span className="text-sm font-bold text-gray-90" aria-current="page">
+											{item.name}
+									</span>
+								) : (
+									<Link href={item.href} className="text-sm text-gray-90 hover:underline">
 										{item.name}
-								</span>
-							) : (
-								<Link href={item.href} className="text-sm text-gray-90 hover:underline">
-									{item.name}
-								</Link>
-							)}
-						</li>
-					);
-				})}
-			</ol>
-		</Container>
+									</Link>
+								)}
+							</li>
+						);
+					})}
+				</ol>
+			</Container>
+		</>
 	);
 }

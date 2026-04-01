@@ -2,11 +2,10 @@ import { StoryblokStory } from '@storyblok/react/rsc';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { getStory } from '@/lib/storyblok-queries';
-import { BASE_URL, SITE_NAME } from '@/lib/site';
-import Breadcrumbs, { buildBreadcrumbs, buildBreadcrumbSchema } from '@/components/layout/Breadcrumbs';
+import { BASE_URL, extractContentSlug, SITE_NAME } from '@/lib/site';
+import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import {
 	DEFAULT_LOCALE,
-	extractLocaleAndSlug,
 	getAlternateOgLocales,
 	getOgLocale,
 	Locale,
@@ -29,25 +28,27 @@ function buildCanonicalUrl(locale: Locale, fullSlug: string): string {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
 	const { slug } = await params;
-	const { localeKey, locale, fullSlug } = extractLocaleAndSlug(slug);
+	const slugWithoutLocale = extractContentSlug(slug);
+
+	const locale = await getServerLocale();
+	const localeKey = 'de-DE'; // TODO : adjust
 
 	try {
-		const { data } = await getStory(fullSlug, locale);
+		const { data } = await getStory(locale, slugWithoutLocale);
 		const content = data.story.content;
-		const canonicalUrl = buildCanonicalUrl(locale, fullSlug);
+		const canonicalUrl = buildCanonicalUrl(locale, slugWithoutLocale);
 		const ogImage = content.seo_og_image?.filename || `${BASE_URL}/og-default.jpg`;
 		const pageTitle = content.seo_title || data.story.name;
 
 		// hreflang URLs für alle Locales + x-default
-		const path = fullSlug === 'home' ? '' : fullSlug;
 		const languages: Record<string, string> = {
-			'x-default': `${BASE_URL}/${DEFAULT_LOCALE.urlSegment}/${path}`.replace(/\/+$/, ''),
+			'x-default': `${BASE_URL}/${DEFAULT_LOCALE.urlSegment}/${slugWithoutLocale}`.replace(/\/+$/, ''),
 			...Object.fromEntries(
 				localeKeys.map((key) => [
 					key.toLowerCase(),
-					`${BASE_URL}/${localeMap[key].urlSegment}/${path}`.replace(/\/+$/, ''),
-				])
-			)
+					`${BASE_URL}/${localeMap[key].urlSegment}/${slugWithoutLocale}`.replace(/\/+$/, ''),
+				]),
+			),
 		};
 
 		return {
@@ -88,19 +89,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function Page({ params }: PageProps) {
 	const { slug } = await params;
-	const { locale, fullSlug } = extractLocaleAndSlug(slug);
-	const l = await getServerLocale();
-
-	const pathname = `/${locale.urlSegment}/${fullSlug === 'home' ? '' : fullSlug}`.replace(/\/$/, '') || `/${locale.urlSegment}`;
-
-	console.log(`Page ${l.storyblokCode}`);
-
-	// Breadcrumbs
-	const breadcrumbs = await buildBreadcrumbs(pathname, locale);
-	const schema = buildBreadcrumbSchema(breadcrumbs);
+	const slugWithoutLocale = extractContentSlug(slug);
+	const locale = await getServerLocale();
 
 	try {
-		const { data } = await getStory(fullSlug, locale);
+		const { data } = await getStory(locale, slugWithoutLocale);
 
 		if (!data?.story) {
 			return notFound();
@@ -108,11 +101,7 @@ export default async function Page({ params }: PageProps) {
 
 		return (
 			<main className="flex-1">
-				<script type="application/ld+json"
-								dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-				/>
-
-				<Breadcrumbs pathname={pathname} />
+				<Breadcrumbs locale={locale} slug={slugWithoutLocale} />
 				<StoryblokStory story={data.story} />
 			</main>
 		);

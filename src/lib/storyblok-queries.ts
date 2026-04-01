@@ -23,11 +23,11 @@ const getVersion = async () => {
  *
  * @see https://react.dev/reference/react/cache
  */
-export const getStory = cache(async (fullSlug: string, locale: Locale = DEFAULT_LOCALE) => {
+export const getStory = cache(async (locale: Locale = DEFAULT_LOCALE, slug: string) => {
 	const storyblokApi = getStoryblokApi();
 	const version = await getVersion();
 
-	return storyblokApi.get(`cdn/stories/${fullSlug}`, {
+	return storyblokApi.get(`cdn/stories/${slug}`, {
 		version,
 		language: locale.storyblokCode,
 	});
