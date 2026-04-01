@@ -24,7 +24,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
 
 	return (
 		<StoryblokProvider>
-			<html lang={locale.urlSegment} data-scroll-behavior="smooth">
+			<html lang={locale.language} data-scroll-behavior="smooth">
 				<body className="bg-white subpixel-antialiased flex flex-col w-full min-h-screen">
 					<Header/>
 					{children}
