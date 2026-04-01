@@ -8,6 +8,9 @@ import { t } from '@/lib/i18n';
 interface BreadcrumbsProps {
 	locale: Locale;
 	slug: string;
+	items?: BreadcrumbItem[];
+	/** LD+JSON Schema nur einmal im DOM rendern */
+	includeSchema?: boolean;
 }
 
 interface BreadcrumbItem {
@@ -21,7 +24,7 @@ interface StoryblokLink {
 	is_folder?: boolean;
 }
 
-async function buildBreadcrumbs(locale: Locale, slug: string): Promise<BreadcrumbItem[]> {
+export async function buildBreadcrumbs(locale: Locale, slug: string): Promise<BreadcrumbItem[]> {
 	const segment = locale.language;
 
 	const homeTitle = t(locale, 'home');
@@ -70,15 +73,17 @@ function buildBreadcrumbSchema(breadcrumbs: BreadcrumbItem[]) {
 	};
 }
 
-export default async function Breadcrumbs({ locale, slug }: BreadcrumbsProps) {
-	const breadcrumbs = await buildBreadcrumbs(locale, slug);
+export default async function Breadcrumbs({ locale, slug, items, includeSchema = false }: BreadcrumbsProps) {
+	const breadcrumbs = items ?? await buildBreadcrumbs(locale, slug);
 	const breadcrumbsSchema = buildBreadcrumbSchema(breadcrumbs);
 
 	return (
 		<>
-			<script type="application/ld+json"
-							dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsSchema) }}
-			/>
+			{includeSchema && (
+				<script type="application/ld+json"
+								dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsSchema) }}
+				/>
+			)}
 
 			<Container className="h-16 flex flex-row items-center bg-gray-10"
 								 aria-label={t(locale, 'header.navigation.breadcrumb')}

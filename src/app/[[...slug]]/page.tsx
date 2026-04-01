@@ -3,8 +3,9 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { getStory } from '@/lib/storyblok-queries';
 import { BASE_URL, extractContentSlug, SITE_NAME } from '@/lib/site';
-import Breadcrumbs from '@/components/layout/Breadcrumbs';
+import Breadcrumbs, { buildBreadcrumbs } from '@/components/layout/Breadcrumbs';
 import {
+	availableLanguages,
 	DEFAULT_LOCALE,
 	getAlternateOgLocales,
 	getOgLocale,
@@ -42,9 +43,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 		const languages: Record<string, string> = {
 			'x-default': `${BASE_URL}/${DEFAULT_LOCALE.language}/${path}`.replace(/\/+$/, ''),
 			...Object.fromEntries(
-				locales.map((l) => [
-					toLocaleTag(l).toLowerCase(),
-					`${BASE_URL}/${l.language}/${path}`.replace(/\/+$/, ''),
+				availableLanguages.map((lang) => [
+					lang,
+					`${BASE_URL}/${lang}/${path}`.replace(/\/+$/, ''),
 				]),
 			),
 		};
@@ -90,6 +91,8 @@ export default async function Page({ params }: PageProps) {
 	const contentSlug = extractContentSlug(slug);
 	const locale = await getServerLocale();
 
+	const breadcrumbs = await buildBreadcrumbs(locale, contentSlug);
+
 	try {
 		const { data } = await getStory(locale, contentSlug);
 
@@ -99,8 +102,9 @@ export default async function Page({ params }: PageProps) {
 
 		return (
 			<main className="flex-1">
-				<Breadcrumbs locale={locale} slug={contentSlug} />
+				<Breadcrumbs locale={locale} slug={contentSlug} items={breadcrumbs} includeSchema={true} />
 				<StoryblokStory story={data.story} />
+				<Breadcrumbs locale={locale} slug={contentSlug} items={breadcrumbs} />
 			</main>
 		);
 	} catch (error) {
