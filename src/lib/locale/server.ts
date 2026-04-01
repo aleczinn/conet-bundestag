@@ -1,28 +1,45 @@
 import { cookies, headers } from 'next/headers';
-import { getLocale, getLocaleKeyFromSegment } from './locales';
-import { DEFAULT_LOCALE, LOCALE_COOKIE_NAME } from '@/lib/locale/locales';
-import type { Locale } from '@/lib/locale/locales';
+import {
+	COOKIE_LOCALE_KEY,
+	COOKIE_LOCALE_SEGMENT,
+	DEFAULT_LOCALE,
+	getLocale,
+	getLocaleKeyFromSegment,
+	localeMap,
+	type Locale,
+	type LocaleKey,
+} from './locales';
 
 /**
- * Liest die aktuelle Locale aus dem x-pathname Header (gesetzt von Middleware).
- * Kann in allen Server Components direkt aufgerufen werden.
+ * Liest die aktuelle Locale – nutzt den vom Proxy gesetzten x-locale-key
+ * (enthält die regionale Variante, z.B. 'de-AT'), mit Fallbacks auf
+ * URL-Segment und Cookie.
  */
 export async function getServerLocale(): Promise<Locale> {
-	// Primär: URL-basiert (vom Proxy gesetzt)
 	const headersList = await headers();
-	const pathname = headersList.get('x-pathname');
 
-	if (pathname) {
-		const firstSegment = pathname.split('/').filter(Boolean)[0];
-		const key = getLocaleKeyFromSegment(firstSegment);
-		if (key) {
-			return getLocale(key);
-		}
+	// Exakter LocaleKey aus Proxy (enthält regionale Variante)
+	const localeKey = headersList.get('x-locale-key') as LocaleKey | null;
+	if (localeKey && localeMap[localeKey]) {
+		return localeMap[localeKey];
 	}
 
-	// Fallback: Cookie
+	// URL-basiert (Default für das Segment)
+	const pathname = headersList.get('x-pathname');
+	if (pathname) {
+		const segment = pathname.split('/').filter(Boolean)[0];
+		const key = getLocaleKeyFromSegment(segment);
+		if (key) return getLocale(key);
+	}
+
+	// Cookie
 	const cookieStore = await cookies();
-	const segment = cookieStore.get(LOCALE_COOKIE_NAME)?.value;
+	const cookieKey = cookieStore.get(COOKIE_LOCALE_KEY)?.value as LocaleKey | undefined;
+	if (cookieKey && localeMap[cookieKey]) {
+		return localeMap[cookieKey];
+	}
+
+	const segment = cookieStore.get(COOKIE_LOCALE_SEGMENT)?.value;
 	const key = segment ? getLocaleKeyFromSegment(segment) : undefined;
 	return key ? getLocale(key) : DEFAULT_LOCALE;
 }

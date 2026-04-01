@@ -14,6 +14,7 @@ import {
 	localeMap,
 } from '@/lib/locale/locales';
 import { t } from '@/lib/i18n';
+import { getServerLocale } from '@/lib/locale/server';
 
 interface PageProps {
 	params: Promise<{
@@ -88,7 +89,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function Page({ params }: PageProps) {
 	const { slug } = await params;
 	const { locale, fullSlug } = extractLocaleAndSlug(slug);
+	const l = await getServerLocale();
+
 	const pathname = `/${locale.urlSegment}/${fullSlug === 'home' ? '' : fullSlug}`.replace(/\/$/, '') || `/${locale.urlSegment}`;
+
+	console.log(`Page ${l.storyblokCode}`);
 
 	// Breadcrumbs
 	const breadcrumbs = await buildBreadcrumbs(pathname, locale);

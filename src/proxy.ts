@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { DEFAULT_LOCALE, isValidLocaleSegment, LOCALE_COOKIE_NAME } from '@/lib/locale/locales';
+import {
+	COOKIE_LOCALE_KEY,
+	COOKIE_LOCALE_SEGMENT,
+	DEFAULT_LOCALE,
+	isValidLocaleSegment,
+	type LocaleKey,
+	localeMap,
+	resolveLocaleKey,
+} from '@/lib/locale/locales';
 
 export function proxy(request: NextRequest) {
 	const { pathname } = request.nextUrl;
@@ -7,20 +15,39 @@ export function proxy(request: NextRequest) {
 	const firstSegment = segments[0];
 
 	if (isValidLocaleSegment(firstSegment)) {
-		// Locale in URL vorhanden → durchlassen + Header/Cookie setzen
 		const response = NextResponse.next();
 		response.headers.set('x-pathname', pathname);
-		response.cookies.set(LOCALE_COOKIE_NAME, firstSegment, {
+
+		// Regionale Variante: Cookie hat Vorrang, sonst Accept-Language
+		const cookieKey = request.cookies.get(COOKIE_LOCALE_KEY)?.value;
+		const localeKey =
+			cookieKey && localeMap[cookieKey as LocaleKey]?.urlSegment === firstSegment
+				? cookieKey
+				: resolveLocaleKey(firstSegment, request.headers.get('accept-language') ?? '');
+
+		if (localeKey) {
+			response.headers.set('x-locale-key', localeKey);
+			response.cookies.set(COOKIE_LOCALE_KEY, localeKey, {
+				maxAge: 60 * 60 * 24 * 365,
+				path: '/',
+				sameSite: 'lax',
+			});
+		}
+
+		response.cookies.set(COOKIE_LOCALE_SEGMENT, firstSegment, {
 			maxAge: 60 * 60 * 24 * 365,
 			path: '/',
 			sameSite: 'lax',
 		});
+
 		return response;
 	}
 
-	// Keine Locale → Cookie prüfen, sonst Default
-	const cookieSegment = request.cookies.get(LOCALE_COOKIE_NAME)?.value;
-	const targetSegment = isValidLocaleSegment(cookieSegment) ? cookieSegment : DEFAULT_LOCALE.urlSegment;
+	// Keine Locale in URL -> Redirect zum richtigen Segment
+	const cookieSegment = request.cookies.get(COOKIE_LOCALE_SEGMENT)?.value;
+	const targetSegment = isValidLocaleSegment(cookieSegment)
+		? cookieSegment
+		: DEFAULT_LOCALE.urlSegment;
 
 	const url = request.nextUrl.clone();
 	url.pathname = `/${targetSegment}${pathname}`;
