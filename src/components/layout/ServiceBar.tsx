@@ -47,12 +47,12 @@ export default function ServiceBar({ locale }: ServiceBarProps) {
 
 				{(!isPageGerman || isGebaerdensprache || isLeichteSprache) && (
 					<li>
-						<Link href="/de"
+						<a href="/de"
 									title={titleBackToGerman}
 									className="h-full flex flex-row items-center gap-1 text-gray-90 hover:cursor-pointer"
 						>
 							<span className="hidden md:block text-sm underlineAnimation">{titleBackToGerman}</span>
-						</Link>
+						</a>
 					</li>
 				)}
 
