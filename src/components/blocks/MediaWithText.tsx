@@ -23,7 +23,7 @@ const MediaWithText = ({ blok }: MediaWithTextProps) => {
 	const isMediaLeft = blok.layout === 'media_left';
 
 	return (
-		<Section className="grid grid-cols-1 md:grid-cols-2 gap-8 py-8" {...storyblokEditable(blok)}>
+		<Section className="grid grid-cols-1 md:grid-cols-2 gap-8 py-16" {...storyblokEditable(blok)}>
 			<div className={`flex flex-col justify-center ${isMediaLeft ? 'order-1' : 'order-2'}`}>
 				<div className="w-full h-full bg-blue-300">media</div>
 			</div>
@@ -34,8 +34,7 @@ const MediaWithText = ({ blok }: MediaWithTextProps) => {
 				)}
 
 				{blok.headline && (
-					<h3 className="font-serif text-gray-90 text-3xl mb-4">{blok.headline}</h3>
-					// <Headline></Headline>
+					<Headline as="h2" variant="h3" className="mb-4">{blok.headline}</Headline>
 				)}
 
 				{blok.text && (
