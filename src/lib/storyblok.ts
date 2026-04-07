@@ -4,6 +4,7 @@ import Feature from '@/components/blocks/Feature';
 import Grid from '@/components/blocks/Grid';
 import Teaser from '@/components/blocks/Teaser';
 import Hero from '@/components/blocks/Hero';
+import MediaWithText from '@/components/blocks/MediaWithText';
 
 const cachedFetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
 	return fetch(input, {
@@ -24,6 +25,7 @@ export const getStoryblokApi = storyblokInit({
 		grid: Grid,
 		teaser: Teaser,
 		hero: Hero,
+		media_with_text: MediaWithText,
 	},
 	apiOptions: {
 		/** Set the correct region for your space. Learn more: https://www.storyblok.com/docs/packages/storyblok-js#example-region-parameter */
