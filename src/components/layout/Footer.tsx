@@ -1,6 +1,7 @@
 import Container from '@/components/layout/Container';
 import { IconInstagram, IconLinkedIn, IconWhatsApp, IconYouTube } from '@/components/icons';
 import IconMastodon from '@/components/icons/IconMastodon';
+import Link from 'next/link';
 
 export default function Footer() {
 	const currentYear = new Date().getFullYear();
@@ -8,18 +9,18 @@ export default function Footer() {
 	return (
 		<footer className="pb-24 w-full bg-white">
 			<Container className="py-8">
-				<div className="flex flex-col items-center md:flex-row justify-between gap-y-8 mb-4">
+				<div className="flex flex-col items-start md:flex-row justify-between gap-y-8 mb-4">
 					<ul className="flex flex-row items-center gap-4 order-1">
 						<li>
-							<a className="bt-link-bold" title="Hilfe" href="#">Hilfe</a>
+							<Link className="bt-link-bold" title="Hilfe" href="/services/hilfe">Hilfe</Link>
 						</li>
 
 						<li>
-							<a className="bt-link-bold" title="Kontakt" href="#">Kontakt</a>
+							<Link className="bt-link-bold" title="Kontakt" href="/services/kontakt">Kontakt</Link>
 						</li>
 
 						<li>
-							<a className="bt-link-bold" title="Inhaltsübersicht" href="#">Inhaltsübersicht</a>
+							<Link className="bt-link-bold" title="Inhaltsübersicht" href="/services/inhaltsuebersicht">Inhaltsübersicht</Link>
 						</li>
 					</ul>
 
@@ -66,15 +67,15 @@ export default function Footer() {
 
 					<ul className="flex flex-row items-center gap-4 md:order-2">
 						<li>
-							<a className="bt-link" title="Barrierefreiheit" href="#">Barrierefreiheit</a>
+							<Link className="bt-link" title="Barrierefreiheit" href="/services/barrierefreiheit">Barrierefreiheit</Link>
 						</li>
 
 						<li>
-							<a className="bt-link" title="Datenschutz" href="#">Datenschutz</a>
+							<Link className="bt-link" title="Datenschutz" href="/services/datenschutz">Datenschutz</Link>
 						</li>
 
 						<li>
-							<a className="bt-link" title="Impressum" href="#">Impressum</a>
+							<Link className="bt-link" title="Impressum" href="/services/impressum">Impressum</Link>
 						</li>
 					</ul>
 				</div>
