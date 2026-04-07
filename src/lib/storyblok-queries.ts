@@ -2,6 +2,11 @@ import { cache } from 'react';
 import { getStoryblokApi } from '@/lib/storyblok';
 import { DEFAULT_LOCALE, Locale } from '@/lib/locale/locales';
 import { draftMode } from 'next/headers';
+import { AnnouncementBarItem } from '@/components/layout/AnnouncementBar';
+
+interface GlobalConfig {
+	announcement_bars: AnnouncementBarItem[];
+}
 
 const getVersion = async () => {
 	if (process.env.NODE_ENV === 'development') {
@@ -47,4 +52,17 @@ export const getLinks = cache(async (locale?: Locale) => {
 		version,
 		...(locale && { language: locale.storyblokCode }),
 	});
+});
+
+/**
+ * Lädt die globale Konfiguration aus Storyblok, welche z. B. Inahlte wie Services-Bars etc. beinhaltet.
+ */
+export const getGlobalConfig = cache(async (): Promise<GlobalConfig> => {
+	const storyblokApi = getStoryblokApi();
+	const version = await getVersion();
+
+	const { data } = await storyblokApi.get('cdn/stories/config/global', {
+		version,
+	});
+	return data.story.content;
 });
