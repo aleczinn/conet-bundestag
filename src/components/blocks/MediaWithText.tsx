@@ -4,6 +4,7 @@ import Section from '@/components/layout/Section';
 import AnnouncementBar from '@/components/layout/AnnouncementBar';
 import { Button } from '@/components/ui/Button';
 import { Headline } from '@/components/ui/Headline';
+import StoryblokMedia from '@/components/ui/StoryblokMedia';
 
 type Layout = 'media_left' | 'media_right';
 
@@ -25,7 +26,12 @@ const MediaWithText = ({ blok }: MediaWithTextProps) => {
 	return (
 		<Section className="grid grid-cols-1 md:grid-cols-2 gap-8 py-16" {...storyblokEditable(blok)}>
 			<div className={`flex flex-col justify-center ${isMediaLeft ? 'order-1' : 'order-2'}`}>
-				<div className="w-full h-full bg-blue-300">media</div>
+				{/*<div className="w-full h-full bg-blue-300">media</div>*/}
+				{/*<pre>{JSON.stringify(blok.media, '', " ")}</pre>*/}
+				<StoryblokMedia
+					asset={blok.media}
+					className="aspect-video"  // Aspect Ratio von außen
+				/>
 			</div>
 
 			<div className={`flex flex-col justify-center ${isMediaLeft ? 'order-2' : 'order-1'}`}>
