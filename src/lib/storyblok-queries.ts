@@ -55,7 +55,7 @@ export const getLinks = cache(async (locale?: Locale) => {
 });
 
 /**
- * Lädt die globale Konfiguration aus Storyblok, welche z. B. Inahlte wie Services-Bars etc. beinhaltet.
+ * Lädt die globale Konfiguration aus Storyblok, welche z. B. Inhalte wie Announcement-Bars beinhaltet.
  */
 export const getGlobalConfig = cache(async (): Promise<GlobalConfig> => {
 	const storyblokApi = getStoryblokApi();
