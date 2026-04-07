@@ -16,6 +16,10 @@
     --color-black: #000000;
     --color-transparent: transparent;
 
+    /* Special colors */
+    --color-focus-line: #FFE300FF;
+    --color-focus-dotted: #323232FF;
+
     /* Font Sizes */
     --font-size-9xl: 8rem;      /* 128px */
     --font-size-8xl: 6rem;      /* 96px */
@@ -35,6 +39,10 @@
     /* Border Width */
     --border-width-1: 1px;
 
+    /* Font Families */
+    --font-sans: 'Noto Sans Display', Arial, Helv, Helvetica, Verdana, sans-serif;
+    --font-serif: 'Noto Serif', Georgia, Times New Roman, Times, serif;
+
     /* Z-Index */
     --z-index-popup: 9000;
 }
@@ -46,10 +54,16 @@ html {
 body {
     text-rendering: optimizeLegibility;
     text-wrap: pretty;
-    @apply text-gray-90 bg-gray-10;
+    @apply font-sans text-gray-90 bg-gray-10;
 }
 
 @layer base {
+    :root {
+        --focus-radius: 0;
+        --focus-x-offset: -0.5rem;
+        --focus-y-offset: -0.5rem;
+    }
+
     @media (prefers-reduced-motion: reduce) {
         *,
         *::before,
@@ -69,5 +83,36 @@ body {
 
     .bt-link-bold {
         @apply font-bold text-sm text-gray-90 hover:underline;
+    }
+}
+
+@layer utilities {
+    .focus-visible-facelift {
+        position: relative;
+
+        &::before,
+        &::after {
+            position: absolute;
+            content: '';
+            pointer-events: none;
+        }
+
+        &:focus-visible {
+            outline: none;
+
+            &::before {
+                inset: var(--focus-y-offset, -0.6rem) var(--focus-x-offset, -0.6rem);
+                border: 0.6rem solid var(--color-focus-line);
+                border-radius: var(--focus-radius, 0);
+                z-index: 1;
+            }
+
+            &::after {
+                inset: calc(var(--focus-y-offset, -0.6rem) + 0.2rem) calc(var(--focus-x-offset, -0.6rem) + 0.2rem);
+                border: 0.2rem dotted var(--color-focus-dotted);
+                border-radius: calc(var(--focus-radius, 0) - 0.2rem);
+                z-index: 2;
+            }
+        }
     }
 }
