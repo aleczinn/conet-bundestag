@@ -1,11 +1,6 @@
 @import "tailwindcss";
 
 @theme {
-    --font-size-4xs: 0.375rem;
-    --font-size-4xs--line-height: 1;
-}
-
-@theme {
     /* Colors */
     --color-gray-10: #F6F6F6;
     --color-gray-20: #EEEEEE;
@@ -24,20 +19,6 @@
     /* Special colors */
     --color-focus-line: #FFE300FF;
     --color-focus-dotted: #323232FF;
-
-    /* Font Sizes */
-    --font-size-9xl: 8rem;      /* 128px */
-    --font-size-8xl: 6rem;      /* 96px */
-    --font-size-7xl: 4.5rem;    /* 72px */
-    --font-size-6xl: 3.75rem;   /* 60px */
-    --font-size-2xs: 0.625rem;  /* 10px */
-    --font-size-3xs: 0.5rem;    /* 8px */
-    --font-size-4xs: 0.375rem;  /* 6px */
-
-    /* Dazugehörige Line-Heights explizit definieren: */
-    --font-size-2xs--line-height: 1.5;
-    --font-size-3xs--line-height: 1.5;
-    --font-size-4xs--line-height: 1.5;
 
     /* Breakpoints */
     --breakpoint-3xl: 112rem;
@@ -97,6 +78,27 @@ body {
 }
 
 @layer utilities {
+    /* Font Sizes - Small */
+    .text-2xs {
+        font-size: 0.625rem;  /* 10px */
+        line-height: 1.5;
+    }
+
+    .text-3xs {
+        font-size: 0.5rem;  /* 8px */
+        line-height: 1.5;
+    }
+
+    .text-4xs {
+        font-size: 0.375rem; /* 6px */
+        line-height: 1.5;
+    }
+
+    .text-5xs {
+        font-size: 0.25rem; /* 4px */
+        line-height: 1.5;
+    }
+
     .focus-visible-facelift {
         position: relative;
 
