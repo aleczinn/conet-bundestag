@@ -86,12 +86,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 	}
 }
 
+const BLOCKED_SLUGS = ["config"];
+
 export default async function Page({ params }: PageProps) {
 	const { slug } = await params;
 	const contentSlug = extractContentSlug(slug);
 	const locale = await getServerLocale();
 
 	const breadcrumbs = await buildBreadcrumbs(locale, contentSlug);
+
+	// Config-Routen blocken (funktioniert mit und ohne Locale-Prefix)
+	if (BLOCKED_SLUGS.some((blocked) => contentSlug === blocked || contentSlug.startsWith(`${blocked}/`))) {
+		return notFound();
+	}
 
 	try {
 		const { data } = await getStory(locale, contentSlug);
