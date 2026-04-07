@@ -13,7 +13,10 @@
             "service": "Site Navigation",
             "breadcrumb": "Breadcrumb navigation"
         },
-        "change_langauge_to": "Change language to"
+        "change_langauge_to": "Change language to",
+        "announcement_bar":{
+            "dismiss": "Close announcement"
+        }
     },
     "404": {
         "title": "Page not found",

@@ -1,6 +1,11 @@
 @import "tailwindcss";
 
 @theme {
+    --font-size-4xs: 0.375rem;
+    --font-size-4xs--line-height: 1;
+}
+
+@theme {
     /* Colors */
     --color-gray-10: #F6F6F6;
     --color-gray-20: #EEEEEE;
@@ -28,6 +33,11 @@
     --font-size-2xs: 0.625rem;  /* 10px */
     --font-size-3xs: 0.5rem;    /* 8px */
     --font-size-4xs: 0.375rem;  /* 6px */
+
+    /* Dazugehörige Line-Heights explizit definieren: */
+    --font-size-2xs--line-height: 1.5;
+    --font-size-3xs--line-height: 1.5;
+    --font-size-4xs--line-height: 1.5;
 
     /* Breakpoints */
     --breakpoint-3xl: 112rem;

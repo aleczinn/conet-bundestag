@@ -1,3 +1,5 @@
+import { AnnouncementBarItem } from '@/components/layout/AnnouncementBar';
+
 export const BASE_URL =
 	process.env.NEXT_PUBLIC_BASE_URL ||
 	process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}` ||
@@ -21,4 +23,22 @@ export function extractContentSlug(slug?: string[]): string {
 		return 'home';
 	}
 	return slug.slice(1).join('/');
+}
+
+export function getActiveAnnouncementBar(items: AnnouncementBarItem[]): AnnouncementBarItem | null {
+	if (!items?.length) {
+		return null;
+	}
+
+	const now = new Date();
+
+	return items.find((item) => {
+		if (!item.enabled) {
+			return false;
+		}
+		if (item.start_date && new Date(item.start_date) > now) {
+			return false;
+		}
+		return !(item.end_date && new Date(item.end_date) < now);
+	}) ?? null;
 }

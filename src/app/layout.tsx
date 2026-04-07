@@ -2,7 +2,7 @@ import './globals.css';
 import { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import StoryblokProvider from '../components/StoryblokProvider';
-import { BASE_URL, SITE_NAME } from '@/lib/site';
+import { BASE_URL, getActiveAnnouncementBar, SITE_NAME } from '@/lib/site';
 import { getServerLocale } from '@/lib/locale/server';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -24,12 +24,13 @@ interface RootLayoutProps {
 export default async function RootLayout({ children }: RootLayoutProps) {
 	const locale = await getServerLocale();
 	const config = await getGlobalConfig();
+	const activeAnnouncementBar = getActiveAnnouncementBar(config.announcement_bars ?? []);
 
 	return (
 		<StoryblokProvider>
 			<html lang={locale.language} data-scroll-behavior="smooth">
 				<body className="bg-white subpixel-antialiased flex flex-col w-full min-h-screen">
-					<AnnouncementBar items={config.announcement_bars ?? []} />
+					{activeAnnouncementBar && <AnnouncementBar locale={locale} item={activeAnnouncementBar} />}
 					<Header/>
 					{children}
 					<Footer/>

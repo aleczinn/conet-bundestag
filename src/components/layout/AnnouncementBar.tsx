@@ -1,5 +1,10 @@
-import Container from '@/components/layout/Container';
+'use client';
+
+import { useState, useEffect } from 'react';
 import { renderRichText } from '@storyblok/react';
+import Container from '@/components/layout/Container';
+import { t } from '@/lib/i18n';
+import { Locale } from '@/lib/locale/locales';
 
 export type AnnouncementBarItem = {
 	_uid: string;
@@ -11,42 +16,55 @@ export type AnnouncementBarItem = {
 }
 
 interface AnnouncementBarProps {
-	items: AnnouncementBarItem[];
+	locale: Locale;
+	item: AnnouncementBarItem;
 }
 
-function getActiveAnnouncementBar(items: AnnouncementBarItem[]): AnnouncementBarItem | null {
-	if (!items?.length) {
+export default function AnnouncementBar({ locale, item }: AnnouncementBarProps) {
+	const storageKey = `announcement-dismissed-${item._uid}`;
+	const [visible, setVisible] = useState(false);
+
+	useEffect(() => {
+		const dismissed = sessionStorage.getItem(storageKey);
+		if (!dismissed) setVisible(true);
+	}, [storageKey]);
+
+	if (!visible) {
 		return null;
 	}
 
-	const now = new Date();
-
-	return items.find((item) => {
-		if (!item.enabled) {
-			return false;
-		}
-		if (item.start_date && new Date(item.start_date) > now) {
-			return false;
-		}
-		return !(item.end_date && new Date(item.end_date) < now);
-	}) ?? null;
-}
-
-export default function AnnouncementBar({ items }: AnnouncementBarProps) {
-	const bar = getActiveAnnouncementBar(items);
-
-	if (!bar) {
-		return;
-	}
-
-	const colors = {
-		info: "bg-[#002C5C] text-gray-10",
-		warning: "bg-[#002C5C] text-gray-90",
+	const dismiss = () => {
+		sessionStorage.setItem(storageKey, '1');
+		setVisible(false);
 	};
 
+	const colors: Record<string, string> = {
+		info: 'bg-[#002C5C] text-gray-10',
+		warning: 'bg-[#F7D154] text-gray-90',
+	};
+
+	const colorsDismiss: Record<string, string> = {
+		info: 'text-gray-10 hover:text-gray-40',
+		warning: 'text-gray-90 hover:text-gray-70',
+	}
+
+	const titleDismiss = t(locale, 'header.announcement_bar.dismiss');
+
 	return (
-		<Container className={`w-full py-2 text-center ${colors[bar.type]}`}>
-			<span dangerouslySetInnerHTML={{ __html: renderRichText(bar.message) }} />
+		<Container className={`w-full py-2 ${colors[item.type] ?? colors.info}`}>
+			<div className="flex flex-row items-center justify-center relative">
+				<span className="text-center text-sm md:text-base"
+							dangerouslySetInnerHTML={{ __html: renderRichText(item.message) }}
+				/>
+
+				<button onClick={dismiss}
+								title={titleDismiss}
+								aria-label={titleDismiss}
+								className={`absolute right-0 p-1 hover:cursor-pointer ${colorsDismiss[item.type] ?? colorsDismiss.info}`}
+				>
+					✕
+				</button>
+			</div>
 		</Container>
 	)
 }

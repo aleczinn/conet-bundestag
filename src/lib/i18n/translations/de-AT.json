@@ -13,7 +13,10 @@
             "service": "Servicenavigation",
             "breadcrumb": "Brotkrumennavigation"
         },
-        "change_langauge_to": "Sprache wechseln zu"
+        "change_langauge_to": "Sprache wechseln zu",
+        "announcement_bar":{
+            "dismiss": "Ankündigung schließen"
+        }
     },
     "404": {
         "title": "Seite nicht gefunden",
