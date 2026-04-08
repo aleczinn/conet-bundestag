@@ -54,7 +54,7 @@ export default function AnnouncementBar({ locale, item }: AnnouncementBarProps) 
 		<Container className={`w-full py-2 ${colors[item.type] ?? colors.info}`}>
 			<div className="flex flex-row items-center justify-center relative">
 				<span className="text-center text-sm md:text-base"
-							dangerouslySetInnerHTML={{ __html: renderRichText(item.message) }}
+							dangerouslySetInnerHTML={{ __html: renderRichText(item.message) ?? '' }}
 				/>
 
 				<button onClick={dismiss}

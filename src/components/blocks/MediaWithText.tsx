@@ -40,7 +40,7 @@ const MediaWithText = ({ blok }: MediaWithTextProps) => {
 
 				{blok.text && (
 					<span className="[&_p:not(:last-child)]:mb-2"
-								dangerouslySetInnerHTML={{ __html: renderRichText(blok.text) }}
+								dangerouslySetInnerHTML={{ __html: renderRichText(blok.text) ?? '' }}
 					/>
 				)}
 
