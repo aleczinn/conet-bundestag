@@ -1,7 +1,7 @@
 import { StoryblokStory } from '@storyblok/react/rsc';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import { getStory } from '@/lib/storyblok-queries';
+import { getLinks, getStory } from '@/lib/storyblok-queries';
 import { BASE_URL, extractContentSlug, SITE_NAME } from '@/lib/site';
 import Breadcrumbs, { buildBreadcrumbs } from '@/components/layout/Breadcrumbs';
 import {
@@ -20,11 +20,6 @@ interface PageProps {
 	}>;
 }
 
-function buildCanonicalUrl(locale: Locale, fullSlug: string): string {
-	const path = fullSlug === 'home' ? '' : fullSlug;
-	return `${BASE_URL}/${locale.language}/${path}`.replace(/\/+$/, '');
-}
-
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
 	const { slug } = await params;
 	const contentSlug = extractContentSlug(slug);
@@ -34,12 +29,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 	try {
 		const { data } = await getStory(locale, contentSlug);
 		const content = data.story.content;
-		const canonicalUrl = buildCanonicalUrl(locale, contentSlug);
+
+		const path = contentSlug === 'home' ? '' : contentSlug;
+		const canonicalUrl = content.seo_canonical || `${BASE_URL}/${locale.language}/${path}`.replace(/\/+$/, '');
 		const ogImage = content.seo_og_image?.filename || `${BASE_URL}/og-default.jpg`;
 		const pageTitle = content.seo_title || data.story.name;
 
 		// hreflang URLs für alle Locales + x-default
-		const path = contentSlug === 'home' ? '' : contentSlug;
 		const languages: Record<string, string> = {
 			'x-default': `${BASE_URL}/${DEFAULT_LOCALE.language}/${path}`.replace(/\/+$/, ''),
 			...Object.fromEntries(
@@ -54,7 +50,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 			title: pageTitle,
 			description: content.seo_description || '',
 			alternates: {
-				canonical: content.seo_canonical || canonicalUrl,
+				canonical: canonicalUrl,
 				languages,
 			},
 			robots: {
