@@ -1,11 +1,11 @@
 import { ComponentPropsWithoutRef, ElementType } from 'react';
 import { cn } from '@/lib/utils';
 
-type HeadlineTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
+type HeadlineTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
 type HeadlineDesign = 'default' | 'line';
 
 type HeadlineProps<T extends HeadlineTag = 'h2'> = {
-	as?: HeadlineTag;
+	as?: T;
 	variant?: HeadlineTag;
 	design?: HeadlineDesign;
 } & ComponentPropsWithoutRef<T>;
@@ -18,6 +18,7 @@ const variantClasses: Record<HeadlineTag, string> = {
 	h5: 'font-serif text-xl text-gray-90',
 	h6: 'font-serif text-lg text-gray-90',
 	p: 'font-sans text-base text-gray-90',
+	span: 'font-sans text-sm text-gray-90',
 };
 
 const designClasses: Record<HeadlineDesign, string> = {
@@ -25,19 +26,25 @@ const designClasses: Record<HeadlineDesign, string> = {
 	line: 'pt-1 border-t-2 border-solid border-gray-90',
 };
 
-export function Headline({
-													 as,
-													 variant,
-													 design = 'default',
-													 className,
-													 children,
-													 ...props
-												 }: HeadlineProps) {
+export function Headline<T extends HeadlineTag = 'h2'>({
+																												 as,
+																												 variant,
+																												 design = 'default',
+																												 className,
+																												 children,
+																												 ...props
+																											 }: HeadlineProps<T>) {
 	const Tag = (as ?? 'h2') as ElementType;
 
 	return (
-		<Tag
-			className={cn('w-fit text-gray-90', variantClasses[variant ?? 'p'], designClasses[design ?? 'default'], className)} {...props}>
+		<Tag className={cn(
+			'w-fit text-gray-90',
+			variantClasses[variant ?? as ?? 'h2'],
+			designClasses[design],
+			className,
+		)}
+				 {...props}
+		>
 			{children}
 		</Tag>
 	);

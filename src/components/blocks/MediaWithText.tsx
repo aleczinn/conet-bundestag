@@ -1,7 +1,6 @@
 import { storyblokEditable } from '@storyblok/react/rsc';
 import { renderRichText, SbBlokData } from '@storyblok/react';
 import Section from '@/components/layout/Section';
-import AnnouncementBar from '@/components/layout/AnnouncementBar';
 import { Button } from '@/components/ui/Button';
 import { Headline } from '@/components/ui/Headline';
 import StoryblokMedia from '@/components/ui/StoryblokMedia';

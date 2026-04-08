@@ -18,12 +18,6 @@ interface BreadcrumbItem {
 	href: string;
 }
 
-interface StoryblokLink {
-	slug?: string;
-	name?: string;
-	is_folder?: boolean;
-}
-
 export async function buildBreadcrumbs(locale: Locale, slug: string): Promise<BreadcrumbItem[]> {
 	const segment = locale.language;
 
