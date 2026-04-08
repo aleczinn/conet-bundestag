@@ -82,6 +82,32 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 	}
 }
 
+/**
+ * Was macht diese Methode (SSG - Static Site Generation):
+ *
+ * Next.js rendert Seiten mit [[...slug]] standardmäßig on-demand – der Server generiert die HTML erst wenn jemand
+ * die URL aufruft (SSR). Mit generateStaticParams sagst du Next.js beim Build: "Diese URLs existieren, rendere sie
+ * jetzt als statisches HTML."
+ *
+ * Das Ergebnis landet als fertige HTML-Datei auf dem Server/CDN -> kein Datenbankzugriff bei jedem Request mehr.
+ * SSR:  Request → Server fragt Storyblok → rendert HTML → Response        (langsamer)
+ * SSG:  Build → alle Seiten vorgerendert → Request bekommt fertiges HTML  (schneller)
+ */
+export async function generateStaticParams() {
+	const { data } = await getLinks();
+	const links = data.links ?? {};
+
+	return Object.values(links)
+		.filter((link: any) => !link.is_folder)
+		.flatMap((link: any) => {
+			const path = link.slug === 'home' ? '' : link.slug;
+
+			return availableLanguages.map((lang) => ({
+				slug: path ? [lang, ...path.split('/')] : [lang],
+			}));
+		});
+}
+
 const BLOCKED_SLUGS = ["config"];
 
 export default async function Page({ params }: PageProps) {

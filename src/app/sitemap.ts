@@ -5,8 +5,9 @@ import { availableLanguages } from '@/lib/locale/locales';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	const { data } = await getLinks();
+	const links = data.links ?? {};
 
-	return Object.values(data.links)
+	return Object.values(links)
 		.filter((link: any) => !link.is_folder)
 		.flatMap((link: any) => {
 			const path = link.slug === 'home' ? '' : link.slug;
