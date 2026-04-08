@@ -8,6 +8,7 @@ const nextConfig = {
 		STORYBLOK_REGION: process.env.STORYBLOK_REGION,
 	},
 	images: {
+		loaderFile: './src/lib/storyblokImageLoader.ts',
 		remotePatterns: [
 			{
 				protocol: 'https',

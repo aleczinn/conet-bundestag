@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { ComponentPropsWithoutRef, CSSProperties } from 'react';
 
 interface StoryblokAsset {
 	filename: string;
@@ -9,73 +10,186 @@ interface StoryblokAsset {
 
 interface StoryblokMediaProps {
 	asset: StoryblokAsset;
+	width?: number;
+	height?: number;
 	className?: string;
-	sizes?: string;
+	priority?: boolean;
+	imgProps?: Omit<ComponentPropsWithoutRef<typeof Image>,'src' | 'alt' | 'width' | 'height' | 'fill' | 'loader'>;
+	videoProps?: Omit<ComponentPropsWithoutRef<'video'>, 'src'>;
+	iframeProps?: Omit<ComponentPropsWithoutRef<'iframe'>, 'src' | 'title'>;
 }
 
-function getMediaType(filename: string): 'image' | 'video' {
+type MediaType = 'image' | 'video' | 'embed';
+
+function detectMediaType(filename: string, isExternal?: boolean): MediaType {
+	if (isExternal) {
+		return 'embed';
+	}
 	const ext = filename.split('?')[0].split('.').pop()?.toLowerCase() ?? '';
 	return ['mp4', 'webm', 'ogg', 'mov'].includes(ext) ? 'video' : 'image';
 }
 
-function toEmbedUrl(url: string): string | null {
-	// YouTube: watch?v=ID → embed/ID
-	const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/);
-	if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
+/**
+ * Parst WIDTHxHEIGHT aus dem Storyblok-Pfad.
+ * z. B. /f/123/1920x1080/abc/bild.jpg → { width: 1920, height: 1080 }
+ */
+function parseStoryblokDimensions(url: string): { width: number; height: number } | null {
+	const match = url.match(/\/(\d+)x(\d+)\//);
+	if (!match) {
+		return null;
+	}
+	const w = parseInt(match[1], 10);
+	const h = parseInt(match[2], 10);
+	return w > 0 && h > 0 ? { width: w, height: h } : null;
+}
 
-	// Vimeo: vimeo.com/ID → player.vimeo.com/video/ID
+/**
+ * Löst die finalen Render-Dimensionen auf.
+ *
+ * Beispiel: Original 1920×1080, prop width=1280 -> height = round(1280 × (1080 / 1920)) = 720
+ */
+function resolveDimensions(propWidth?: number, propHeight?: number, intrinsic?: {
+	width: number;
+	height: number
+} | null): { width: number; height: number } | null {
+	// Beide Props gesetzt → direkt verwenden
+	if (propWidth && propHeight) return { width: propWidth, height: propHeight };
+
+	const ratio = intrinsic ? intrinsic.height / intrinsic.width : null;
+
+	// Nur width → height aus Ratio errechnen
+	if (propWidth && ratio) {
+		return { width: propWidth, height: Math.round(propWidth * ratio) };
+	}
+
+	// Nur height → width aus Ratio errechnen
+	if (propHeight && ratio && intrinsic) {
+		return { width: Math.round(propHeight / ratio), height: propHeight };
+	}
+
+	// Nichts angegeben → intrinsische Dimensionen aus URL
+	if (intrinsic) return intrinsic;
+
+	return null;
+}
+
+function toEmbedUrl(url: string): string | null {
+	// YouTube: watch?v=ID -> embed/ID
+	const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/);
+	if (ytMatch) {
+		return `https://www.youtube.com/embed/${ytMatch[1]}`;
+	}
+
+	// Vimeo: vimeo.com/ID -> player.vimeo.com/video/ID
 	const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
-	if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+	if (vimeoMatch) {
+		return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+	}
 
 	// Andere externe URLs direkt als iframe-src verwenden
 	return url;
 }
 
+function buildAspectStyle(w?: number, h?: number): CSSProperties {
+	return w && h ? { aspectRatio: `${w} / ${h}` } : {};
+}
+
 export default function StoryblokMedia({
 																				 asset,
+																				 width,
+																				 height,
 																				 className,
-																				 sizes = '(max-width: 768px) 100vw, 50vw',
+																				 priority = false,
+																				 imgProps,
+																				 videoProps,
+																				 iframeProps,
 																			 }: StoryblokMediaProps) {
-	if (!asset?.filename) return null;
+	if (!asset?.filename) {
+		return null;
+	}
 
-	// Externer Link (YouTube, Vimeo etc.)
-	if (asset.is_external_url) {
+	const mediaType = detectMediaType(asset.filename, asset.is_external_url);
+
+	// BILD
+	if (mediaType === 'image') {
+		const intrinsic = parseStoryblokDimensions(asset.filename);
+		const dims = resolveDimensions(width, height, intrinsic);
+		const alt = asset.alt ?? asset.title ?? '';
+
+		if (dims) {
+			return (
+				<Image src={asset.filename}
+							 alt={alt}
+							 width={dims.width}
+							 height={dims.height}
+							 priority={priority}
+							 style={{ width: '100%', height: 'auto' }}
+							 // sizes erklärt dem Browser welche Breite das Bild im Layout hat.
+							 // next/image nutzt das um das optimale srcset-Element zu wählen.
+							 // Überschreiben via imgProps falls man andere Breakpoints brauchst.
+							 sizes="(max-width: 768px) 100vw, (max-width: 1280px) 80vw, 1280px"
+							 className={className}
+							 {...imgProps}
+				/>
+			)
+		}
+
+		// Fallback: Keine Dimensionen ermittelbar -> fill-Modus
+		// Container braucht definierte Höhe (per className von außen)
+		return (
+			<div className={`relative overflow-hidden ${className ?? ''}`}>
+				<Image src={asset.filename}
+							 alt={alt}
+							 fill
+							 priority={priority}
+							 sizes="100vw"
+							 style={{ objectFit: 'cover' }}
+							 {...imgProps}
+				/>
+			</div>
+		)
+	}
+
+	// VIDEO
+	const aspectStyle = buildAspectStyle(width, height);
+	const wrapperStyle: CSSProperties = Object.keys(aspectStyle).length > 0 ? aspectStyle : { aspectRatio: '16 / 9' };
+
+	if (mediaType === 'video') {
+		const hasAutoplay = videoProps?.autoPlay === true;
+
+		return (
+			<div className={`overflow-hidden ${className ?? ''}`} style={wrapperStyle}>
+				<video src={asset.filename}
+							 controls
+							 playsInline
+							 preload={hasAutoplay ? 'auto' : 'metadata'}
+							 style={{ width: '100%', height: '100%' }}
+							 {...videoProps}
+				/>
+			</div>
+		);
+	}
+
+	// EXTERNAL VIDEOS
+	if (mediaType === 'embed') {
 		const embedUrl = toEmbedUrl(asset.filename);
-		if (!embedUrl) return null;
 
 		return (
-			<iframe src={embedUrl}
-							className={className}
-							allowFullScreen
-							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-							title={asset.title ?? asset.alt ?? 'Video'}
-			/>
+			<div className={`overflow-hidden ${className ?? ''}`} style={wrapperStyle}>
+				<iframe src={embedUrl}
+								title={asset.title ?? asset.alt ?? 'Embedded media'}
+								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+								allowFullScreen
+								loading="lazy"
+								sandbox="allow-scripts allow-same-origin allow-presentation"
+								style={{ width: '100%', height: '100%', border: 'none' }}
+								{...iframeProps}
+				/>
+			</div>
 		);
 	}
 
-	const type = getMediaType(asset.filename);
-
-	if (type === 'video') {
-		return (
-			<video src={asset.filename}
-						 className={className}
-						 controls
-						 playsInline
-						 aria-label={asset.alt ?? ''}
-			/>
-		);
-	}
-
-	// Bild — fill braucht einen relativen Parent-Container
 	return (
-		<div className={`relative overflow-hidden ${className ?? ''}`}>
-			<Image src={asset.filename}
-						 alt={asset.alt ?? ''}
-						 title={asset.title ?? undefined}
-						 fill
-						 sizes={sizes}
-						 className="object-cover"
-			/>
-		</div>
+		<div>no media type found</div>
 	);
 }
