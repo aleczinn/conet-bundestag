@@ -1,6 +1,6 @@
 /*!
  * ******************************************************
- * Copyright (C) 1994-2022 Babiel GmbH <info@babiel.com>
+ * Copyright (C) 1994-2028 Babiel GmbH <info@babiel.com>
  *
  * This file is part of a Babiel development
  *
@@ -23,6 +23,7 @@
     font-family: 'Noto Serif';
     font-style: normal;
     font-weight: 400;
+    font-display: swap;
     src: url('/fonts/noto-serif-v21-vietnamese_latin-ext_latin_greek-ext_greek_cyrillic-ext_cyrillic-regular.eot'); /* IE9 Compat Modes */
     src: local(''),
     url('/fonts/noto-serif-v21-vietnamese_latin-ext_latin_greek-ext_greek_cyrillic-ext_cyrillic-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
@@ -36,6 +37,7 @@
     font-family: 'Noto Serif';
     font-style: italic;
     font-weight: 400;
+    font-display: swap;
     src: url('/fonts/noto-serif-v21-vietnamese_latin-ext_latin_greek-ext_greek_cyrillic-ext_cyrillic-italic.eot'); /* IE9 Compat Modes */
     src: local(''),
     url('/fonts/noto-serif-v21-vietnamese_latin-ext_latin_greek-ext_greek_cyrillic-ext_cyrillic-italic.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
@@ -49,6 +51,7 @@
     font-family: 'Noto Serif';
     font-style: normal;
     font-weight: 700;
+    font-display: swap;
     src: url('/fonts/noto-serif-v21-vietnamese_latin-ext_latin_greek-ext_greek_cyrillic-ext_cyrillic-700.eot'); /* IE9 Compat Modes */
     src: local(''),
     url('/fonts/noto-serif-v21-vietnamese_latin-ext_latin_greek-ext_greek_cyrillic-ext_cyrillic-700.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
@@ -62,6 +65,7 @@
     font-family: 'Noto Serif';
     font-style: italic;
     font-weight: 700;
+    font-display: swap;
     src: url('/fonts/noto-serif-v21-vietnamese_latin-ext_latin_greek-ext_greek_cyrillic-ext_cyrillic-700italic.eot'); /* IE9 Compat Modes */
     src: local(''),
     url('/fonts/noto-serif-v21-vietnamese_latin-ext_latin_greek-ext_greek_cyrillic-ext_cyrillic-700italic.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
@@ -76,6 +80,7 @@
     font-family: 'Noto Sans SC';
     font-style: normal;
     font-weight: 400;
+    font-display: swap;
     src: url('/fonts/noto-sans-sc-v26-chinese-simplified-regular.eot'); /* IE9 Compat Modes */
     src: local(''),
     url('/fonts/noto-sans-sc-v26-chinese-simplified-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
@@ -89,6 +94,7 @@
     font-family: 'Noto Sans SC';
     font-style: normal;
     font-weight: 700;
+    font-display: swap;
     src: url('/fonts/noto-sans-sc-v26-chinese-simplified-700.eot'); /* IE9 Compat Modes */
     src: local(''),
     url('/fonts/noto-sans-sc-v26-chinese-simplified-700.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
@@ -103,6 +109,7 @@
     font-family: 'Noto Naskh Arabic';
     font-style: normal;
     font-weight: 400;
+    font-display: swap;
     src: url('/fonts/noto-naskh-arabic-v17-arabic-regular.eot'); /* IE9 Compat Modes */
     src: local(''),
     url('/fonts/noto-naskh-arabic-v17-arabic-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
@@ -116,6 +123,7 @@
     font-family: 'Noto Naskh Arabic';
     font-style: normal;
     font-weight: 500;
+    font-display: swap;
     src: url('/fonts/noto-naskh-arabic-v17-arabic-500.eot'); /* IE9 Compat Modes */
     src: local(''),
     url('/fonts/noto-naskh-arabic-v17-arabic-500.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
@@ -129,6 +137,7 @@
     font-family: 'Noto Naskh Arabic';
     font-style: normal;
     font-weight: 600;
+    font-display: swap;
     src: url('/fonts/noto-naskh-arabic-v17-arabic-600.eot'); /* IE9 Compat Modes */
     src: local(''),
     url('/fonts/noto-naskh-arabic-v17-arabic-600.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
@@ -142,6 +151,7 @@
     font-family: 'Noto Naskh Arabic';
     font-style: normal;
     font-weight: 700;
+    font-display: swap;
     src: url('/fonts/noto-naskh-arabic-v17-arabic-700.eot'); /* IE9 Compat Modes */
     src: local(''),
     url('/fonts/noto-naskh-arabic-v17-arabic-700.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
@@ -156,6 +166,7 @@
     font-family: 'Noto Serif SC';
     font-style: normal;
     font-weight: 400;
+    font-display: swap;
     src: url('/fonts/noto-serif-sc-v22-chinese-simplified-regular.eot'); /* IE9 Compat Modes */
     src: local(''),
     url('/fonts/noto-serif-sc-v22-chinese-simplified-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
@@ -169,6 +180,7 @@
     font-family: 'Noto Serif SC';
     font-style: normal;
     font-weight: 700;
+    font-display: swap;
     src: url('/fonts/noto-serif-sc-v22-chinese-simplified-700.eot'); /* IE9 Compat Modes */
     src: local(''),
     url('/fonts/noto-serif-sc-v22-chinese-simplified-700.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
