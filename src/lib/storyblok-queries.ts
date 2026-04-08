@@ -8,9 +8,13 @@ interface GlobalConfig {
 	announcement_bars: AnnouncementBarItem[];
 }
 
-const getVersion = async () => {
+const getVersion = async (ignoreDraftMode = false) => {
 	if (process.env.NODE_ENV === 'development') {
 		return 'draft' as const;
+	}
+
+	if (ignoreDraftMode) {
+		return 'published' as const;
 	}
 
 	const draft = await draftMode();
@@ -44,9 +48,9 @@ export const getStory = cache(async (locale: Locale = DEFAULT_LOCALE, slug: stri
  * (z.B. wenn mehrere Komponenten gleichzeitig rendern).
  * ISR-Revalidierung übernimmt `cachedFetch` in storyblok.ts (60s in prod).
  */
-export const getLinks = cache(async (locale?: Locale) => {
+export const getLinks = cache(async (locale?: Locale, ignoreDraftMode = false) => {
 	const storyblokApi = getStoryblokApi();
-	const version = await getVersion();
+	const version = await getVersion(ignoreDraftMode);
 
 	return storyblokApi.get('cdn/links', {
 		version,

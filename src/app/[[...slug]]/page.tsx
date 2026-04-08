@@ -94,7 +94,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
  * SSG:  Build → alle Seiten vorgerendert → Request bekommt fertiges HTML  (schneller)
  */
 export async function generateStaticParams() {
-	const { data } = await getLinks();
+	const { data } = await getLinks(undefined, true);
 	const links = data.links ?? {};
 
 	return Object.values(links)
