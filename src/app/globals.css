@@ -20,6 +20,7 @@
     /* Special colors */
     --color-focus-line: #FFE300FF;
     --color-focus-dotted: #323232FF;
+    --color-youtube-red: #FF0033;
 
     /* Breakpoints */
     --breakpoint-3xl: 112rem;

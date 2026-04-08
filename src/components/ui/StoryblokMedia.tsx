@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { ComponentPropsWithoutRef, CSSProperties } from 'react';
+import YouTubeFacade from '@/components/ui/YouTubeFacade';
 
 interface StoryblokAsset {
 	filename: string;
@@ -20,6 +21,7 @@ interface StoryblokMediaProps {
 }
 
 type MediaType = 'image' | 'video' | 'embed';
+type EmbeddedType = 'youtube' | 'vimeo' | 'other';
 
 function detectMediaType(filename: string, isExternal?: boolean): MediaType {
 	if (isExternal) {
@@ -73,21 +75,28 @@ function resolveDimensions(propWidth?: number, propHeight?: number, intrinsic?: 
 	return null;
 }
 
-function toEmbedUrl(url: string): string | null {
+function getEmbeddedUrl(url: string): { url: string, type: EmbeddedType, videoId?: string } {
 	// YouTube: watch?v=ID -> embed/ID
 	const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/);
 	if (ytMatch) {
-		return `https://www.youtube.com/embed/${ytMatch[1]}`;
+		return {
+			url: `https://www.youtube.com/embed/${ytMatch[1]}`,
+			type: 'youtube',
+			videoId: ytMatch[1],
+		};
 	}
 
 	// Vimeo: vimeo.com/ID -> player.vimeo.com/video/ID
 	const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
 	if (vimeoMatch) {
-		return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+		return {
+			url: `https://player.vimeo.com/video/${vimeoMatch[1]}`	,
+			type: 'vimeo',
+		}
 	}
 
 	// Andere externe URLs direkt als iframe-src verwenden
-	return url;
+	return {url, type: 'other'};
 }
 
 function buildAspectStyle(w?: number, h?: number): CSSProperties {
@@ -172,12 +181,31 @@ export default function StoryblokMedia({
 
 	// EXTERNAL VIDEOS
 	if (mediaType === 'embed') {
-		const embedUrl = toEmbedUrl(asset.filename);
+		const { url, type, videoId } = getEmbeddedUrl(asset.filename);
+		const label = asset.title ?? asset.alt ?? 'Eingebettetes Video';
 
+		// YOUTUBE
+		if (type === 'youtube' && videoId) {
+			return (
+				<div className={`bg-gray-20 overflow-hidden ${className ?? ''}`} style={wrapperStyle}>
+					<YouTubeFacade videoId={videoId} title={label} />
+				</div>
+			);
+		}
+
+		// Vimeo / andere -> normaler iframe
 		return (
-			<div className={`overflow-hidden ${className ?? ''}`} style={wrapperStyle}>
-				<iframe src={embedUrl}
-								title={asset.title ?? asset.alt ?? 'Embedded media'}
+			<div className={`bg-gray-20 overflow-hidden ${className ?? ''}`} style={wrapperStyle}>
+				<a href={asset.filename}
+					 target="_blank"
+					 rel="noopener noreferrer"
+					 className="sr-only focus:not-sr-only focus:absolute focus:z-10 focus:bg-white focus:px-2 focus:py-1 focus:text-sm focus-visible-facelift">
+					{label} auf {new URL(asset.filename).hostname} öffnen
+				</a>
+
+				<iframe src={url}
+								title={label}
+								tabIndex={-1}
 								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 								allowFullScreen
 								loading="lazy"
