@@ -133,10 +133,6 @@ export default function StoryblokMedia({
 							 height={dims.height}
 							 priority={priority}
 							 style={{ width: '100%', height: 'auto' }}
-							 // sizes erklärt dem Browser welche Breite das Bild im Layout hat.
-							 // next/image nutzt das um das optimale srcset-Element zu wählen.
-							 // Überschreiben via imgProps falls man andere Breakpoints brauchst.
-							 sizes="(max-width: 768px) 100vw, (max-width: 1280px) 80vw, 1280px"
 							 className={className}
 							 {...imgProps}
 				/>
@@ -151,7 +147,6 @@ export default function StoryblokMedia({
 							 alt={alt}
 							 fill
 							 priority={priority}
-							 sizes="100vw"
 							 style={{ objectFit: 'cover' }}
 							 {...imgProps}
 				/>

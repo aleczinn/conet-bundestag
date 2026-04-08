@@ -26,7 +26,14 @@ const MediaWithText = ({ blok, priority = false }: MediaWithTextProps) => {
 	return (
 		<Section className="grid grid-cols-1 md:grid-cols-2 gap-8 py-16" {...storyblokEditable(blok)}>
 			<div className={`flex flex-col justify-center ${isMediaLeft ? 'order-1' : 'order-2'}`}>
-				<StoryblokMedia asset={blok.media} width={800} priority={priority} className="rounded-2xl" />
+				<StoryblokMedia asset={blok.media}
+												width={800}
+												priority={priority}
+												className="rounded-2xl"
+												imgProps={{
+													sizes: '(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 640px',
+												}}
+				/>
 			</div>
 
 			<div className={`flex flex-col justify-center ${isMediaLeft ? 'order-2' : 'order-1'}`}>
