@@ -17,15 +17,16 @@ interface MediaWithTextProps {
 		button_text?: string;
 		button_url?: any;
 	};
+	priority?: boolean;
 }
 
-const MediaWithText = ({ blok }: MediaWithTextProps) => {
+const MediaWithText = ({ blok, priority = false }: MediaWithTextProps) => {
 	const isMediaLeft = blok.layout === 'media_left';
 
 	return (
 		<Section className="grid grid-cols-1 md:grid-cols-2 gap-8 py-16" {...storyblokEditable(blok)}>
 			<div className={`flex flex-col justify-center ${isMediaLeft ? 'order-1' : 'order-2'}`}>
-				<StoryblokMedia asset={blok.media} width={800} className="rounded-2xl" />
+				<StoryblokMedia asset={blok.media} width={800} priority={priority} className="rounded-2xl" />
 			</div>
 
 			<div className={`flex flex-col justify-center ${isMediaLeft ? 'order-2' : 'order-1'}`}>
