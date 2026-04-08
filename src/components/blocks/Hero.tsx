@@ -6,9 +6,10 @@ interface HeroProps {
 		headline: string;
 		text: string;
 	};
+	priority?: boolean;
 }
 
-const Hero = ({ blok }: HeroProps) => {
+const Hero = ({ blok, priority = false }: HeroProps) => {
 	return (
 		<div className="bg-amber-600 w-full min-h-80 flex flex-col justify-center items-center" {...storyblokEditable(blok)}>
 			<h1>{blok.headline}</h1>
