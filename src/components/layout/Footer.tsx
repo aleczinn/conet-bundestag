@@ -26,38 +26,38 @@ export default function Footer() {
 
 					<ul className="flex flex-row items-center gap-8 font-bold md:order-2">
 						<li>
-							<button title="Instagram" className="text-sm flex flex-row items-center gap-2">
+							<a title="Instagram" className="text-sm flex flex-row items-center gap-2">
 								<IconInstagram className="w-8 h-8" />
 								<span className="hidden lg:block">Instagram</span>
-							</button>
+							</a>
 						</li>
 
 						<li>
-							<button title="LinkedIn" className="text-sm flex flex-row items-center gap-2">
+							<a title="LinkedIn" className="text-sm flex flex-row items-center gap-2">
 								<IconLinkedIn className="w-8 h-8" />
 								<span className="hidden lg:block">LinkedIn</span>
-							</button>
+							</a>
 						</li>
 
 						<li>
-							<button title="Mastodon" className="text-sm flex flex-row items-center gap-2">
+							<a title="Mastodon" className="text-sm flex flex-row items-center gap-2">
 								<IconMastodon className=" w-8 h-8" />
 								<span className="hidden lg:block">Mastodon</span>
-							</button>
+							</a>
 						</li>
 
 						<li>
-							<button title="WhatsApp" className="text-sm flex flex-row items-center gap-2">
+							<a title="WhatsApp" className="text-sm flex flex-row items-center gap-2">
 								<IconWhatsApp className="w-8 h-8" />
 								<span className="hidden lg:block">WhatsApp</span>
-							</button>
+							</a>
 						</li>
 
 						<li>
-							<button title="YouTube" className="text-sm flex flex-row items-center gap-2">
+							<a title="YouTube" className="text-sm flex flex-row items-center gap-2">
 								<IconYouTube className="w-8 h-8" />
 								<span className="hidden lg:block">YouTube</span>
-							</button>
+							</a>
 						</li>
 					</ul>
 				</div>
