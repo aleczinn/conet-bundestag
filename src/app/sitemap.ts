@@ -8,7 +8,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	const links = data.links ?? {};
 
 	return Object.values(links)
-		.filter((link: any) => !link.is_folder)
+		.filter((link: any) => !link.is_folder && !link.slug?.startsWith('config'))
 		.flatMap((link: any) => {
 			const path = link.slug === 'home' ? '' : link.slug;
 

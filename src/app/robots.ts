@@ -6,7 +6,11 @@ export default function robots(): MetadataRoute.Robots {
 		rules: {
 			userAgent: '*',
 			allow: '/',
-			disallow: ['/api/', '/_next/'],
+			disallow: [
+				'/api/',
+				'/_next/',
+				'/config/' // Storyblok-Konfigurationsseiten, kein öffentlicher Inhalt
+			],
 		},
 		sitemap: `${BASE_URL}/sitemap.xml`,
 	};
