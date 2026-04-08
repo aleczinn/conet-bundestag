@@ -3,6 +3,10 @@ export default function storyblokImageLoader({ src, width, quality }: {
 	width: number;
 	quality?: number;
 }): string {
+	if (!src.includes('a.storyblok.com')) {
+		return src;
+	}
+
 	const match = src.match(/\/(\d+)x(\d+)\//);
 	const originalWidth = match ? parseInt(match[1], 10) : Infinity;
 
