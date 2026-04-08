@@ -37,7 +37,7 @@ export async function buildBreadcrumbs(locale: Locale, slug: string): Promise<Br
 	}
 
 	const { data } = await getLinks();
-	const links: Record<string, StoryblokLink> = data.links;
+	const links = data.links ?? {};
 
 	const slugMap = new Map<string, string>();
 	Object.values(links).forEach((link) => {
