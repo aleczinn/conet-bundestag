@@ -36,10 +36,19 @@ export const getStory = cache(async (locale: Locale = DEFAULT_LOCALE, slug: stri
 	const storyblokApi = getStoryblokApi();
 	const version = await getVersion();
 
-	return storyblokApi.get(`cdn/stories/${slug}`, {
-		version,
-		language: locale.storyblokCode,
-	});
+	try {
+		return await storyblokApi.get(`cdn/stories/${slug}`, {
+			version,
+			language: locale.storyblokCode,
+		});
+	} catch (error: any) {
+		// Storyblok wirft bei 404 einen Fehler mit status 404
+		if (error?.status === 404 || error?.response?.status === 404) {
+			return null;
+		}
+		// Echte Fehler weiterwerfen -> Next.js zeigt error.tsx
+		throw error;
+	}
 });
 
 /**

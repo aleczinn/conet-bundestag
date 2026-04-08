@@ -14,6 +14,8 @@ import {
 import { t } from '@/lib/i18n';
 import { getServerLocale } from '@/lib/locale/server';
 
+const BLOCKED_SLUGS = ["config"];
+
 interface PageProps {
 	params: Promise<{
 		slug?: string[];
@@ -23,63 +25,64 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
 	const { slug } = await params;
 	const contentSlug = extractContentSlug(slug);
-
 	const locale = await getServerLocale();
 
-	try {
-		const { data } = await getStory(locale, contentSlug);
-		const content = data.story.content;
+	const result = await getStory(locale, contentSlug);
 
-		const path = contentSlug === 'home' ? '' : contentSlug;
-		const canonicalUrl = content.seo_canonical || `${BASE_URL}/${locale.language}/${path}`.replace(/\/+$/, '');
-		const ogImage = content.seo_og_image?.filename || `${BASE_URL}/og-default.jpg`;
-		const pageTitle = content.seo_title || data.story.name;
-
-		// hreflang URLs für alle Locales + x-default
-		const languages: Record<string, string> = {
-			'x-default': `${BASE_URL}/${DEFAULT_LOCALE.language}/${path}`.replace(/\/+$/, ''),
-			...Object.fromEntries(
-				availableLanguages.map((lang) => [
-					lang,
-					`${BASE_URL}/${lang}/${path}`.replace(/\/+$/, ''),
-				]),
-			),
-		};
-
-		return {
-			title: pageTitle,
-			description: content.seo_description || '',
-			alternates: {
-				canonical: canonicalUrl,
-				languages,
-			},
-			robots: {
-				index: !content.seo_no_index,
-				follow: !content.seo_no_index,
-			},
-			openGraph: {
-				locale: getOgLocale(locale),
-				alternateLocale: getAlternateOgLocales(locale),
-				siteName: SITE_NAME,
-				title: `${SITE_NAME} - ${pageTitle}`,
-				description: content.seo_description || '',
-				url: canonicalUrl,
-				type: content.seo_og_type || 'website',
-				images: [{ url: ogImage, width: 1200, height: 630 }],
-			},
-			twitter: {
-				card: 'summary_large_image',
-				title: `${SITE_NAME} - ${pageTitle}`,
-				description: content.seo_description || '',
-				images: [ogImage],
-			},
-		};
-	} catch {
+	if (!result?.data?.story) {
 		return {
 			title: t(locale, '404.title'),
 			robots: { index: false, follow: false },
 		};
 	}
+
+	const story = result.data.story;
+	const content = story.content;
+
+	const path = contentSlug === 'home' ? '' : contentSlug;
+	const canonicalUrl = content.seo_canonical || `${BASE_URL}/${locale.language}/${path}`.replace(/\/+$/, '');
+	const ogImage = content.seo_og_image?.filename || `${BASE_URL}/og-default.jpg`;
+	const pageTitle = content.seo_title || story.name;
+
+	// hreflang URLs für alle Locales + x-default
+	const languages: Record<string, string> = {
+		'x-default': `${BASE_URL}/${DEFAULT_LOCALE.language}/${path}`.replace(/\/+$/, ''),
+		...Object.fromEntries(
+			availableLanguages.map((lang) => [
+				lang,
+				`${BASE_URL}/${lang}/${path}`.replace(/\/+$/, ''),
+			]),
+		),
+	};
+
+	return {
+		title: pageTitle,
+		description: content.seo_description || '',
+		alternates: {
+			canonical: canonicalUrl,
+			languages,
+		},
+		robots: {
+			index: !content.seo_no_index,
+			follow: !content.seo_no_index,
+		},
+		openGraph: {
+			locale: getOgLocale(locale),
+			alternateLocale: getAlternateOgLocales(locale),
+			siteName: SITE_NAME,
+			title: `${SITE_NAME} - ${pageTitle}`,
+			description: content.seo_description || '',
+			url: canonicalUrl,
+			type: content.seo_og_type || 'website',
+			images: [{ url: ogImage, width: 1200, height: 630 }],
+		},
+		twitter: {
+			card: 'summary_large_image',
+			title: `${SITE_NAME} - ${pageTitle}`,
+			description: content.seo_description || '',
+			images: [ogImage],
+		},
+	};
 }
 
 /**
@@ -108,37 +111,36 @@ export async function generateStaticParams() {
 		});
 }
 
-const BLOCKED_SLUGS = ["config"];
+function isBlockedSlug(slug: string): boolean {
+	return BLOCKED_SLUGS.some(
+		(blocked) => slug === blocked || slug.startsWith(`${blocked}/`),
+	);
+}
 
 export default async function Page({ params }: PageProps) {
 	const { slug } = await params;
 	const contentSlug = extractContentSlug(slug);
+
+	if (isBlockedSlug(contentSlug)) {
+		return notFound();
+	}
+
 	const locale = await getServerLocale();
+	const result = await getStory(locale, contentSlug);
+
+	if (!result?.data?.story) {
+		return notFound();
+	}
 
 	const breadcrumbs = await buildBreadcrumbs(locale, contentSlug);
 
-	// Config-Routen blocken (funktioniert mit und ohne Locale-Prefix)
-	if (BLOCKED_SLUGS.some((blocked) => contentSlug === blocked || contentSlug.startsWith(`${blocked}/`))) {
-		return notFound();
-	}
-
-	try {
-		const { data } = await getStory(locale, contentSlug);
-
-		if (!data?.story) {
-			return notFound();
-		}
-
-		return (
-			<main className="flex-1 flex flex-col">
-				<Breadcrumbs locale={locale} slug={contentSlug} items={breadcrumbs} includeSchema={true} />
-				<div className="flex-1">
-					<StoryblokStory story={data.story} />
-				</div>
-				<Breadcrumbs locale={locale} slug={contentSlug} items={breadcrumbs} />
-			</main>
-		);
-	} catch (error) {
-		return notFound();
-	}
+	return (
+		<main className="flex-1 flex flex-col">
+			<Breadcrumbs locale={locale} slug={contentSlug} items={breadcrumbs} includeSchema={true} />
+			<div className="flex-1">
+				<StoryblokStory story={result.data.story} />
+			</div>
+			<Breadcrumbs locale={locale} slug={contentSlug} items={breadcrumbs} />
+		</main>
+	)
 }
