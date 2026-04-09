@@ -15,11 +15,9 @@ export default async function Header() {
 
 			<Container className="py-5 bg-white">
 				<div className="flex justify-center sm:justify-start">
-					<Link href="/" className="hover:cursor-pointer" title={t(locale, 'home')}>
-						<span role="img" aria-label="Deutscher Bundestag">
-							<IconBundestagDesktop className="hidden sm:block" />
-              <IconBundestagMobile className="block sm:hidden" />
-						</span>
+					<Link href="/" className="hover:cursor-pointer" title={t(locale, 'home')} aria-label={t(locale, 'home')}>
+						<IconBundestagDesktop className="hidden sm:block" />
+						<IconBundestagMobile className="block sm:hidden" />
 					</Link>
 				</div>
 			</Container>
