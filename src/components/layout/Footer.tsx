@@ -26,35 +26,35 @@ export default function Footer() {
 
 					<ul className="flex flex-row items-center gap-8 font-bold md:order-2">
 						<li>
-							<a title="Instagram" className="text-sm flex flex-row items-center gap-2">
+							<a title="Instagram" href="https://www.instagram.com/bundestag/" target="_blank" className="text-sm flex flex-row items-center gap-2">
 								<IconInstagram className="w-8 h-8" />
 								<span className="hidden lg:block">Instagram</span>
 							</a>
 						</li>
 
 						<li>
-							<a title="LinkedIn" className="text-sm flex flex-row items-center gap-2">
+							<a title="LinkedIn" href="https://www.linkedin.com/company/deutscher-bundestag-verwaltung" target="_blank" className="text-sm flex flex-row items-center gap-2">
 								<IconLinkedIn className="w-8 h-8" />
 								<span className="hidden lg:block">LinkedIn</span>
 							</a>
 						</li>
 
 						<li>
-							<a title="Mastodon" className="text-sm flex flex-row items-center gap-2">
+							<a title="Mastodon" href="https://social.bund.de/@bundestag" target="_blank" className="text-sm flex flex-row items-center gap-2">
 								<IconMastodon className=" w-8 h-8" />
 								<span className="hidden lg:block">Mastodon</span>
 							</a>
 						</li>
 
 						<li>
-							<a title="WhatsApp" className="text-sm flex flex-row items-center gap-2">
+							<a title="WhatsApp" href="https://www.whatsapp.com/channel/0029VaJlSAOGOj9fgM3dAS1p" target="_blank" className="text-sm flex flex-row items-center gap-2">
 								<IconWhatsApp className="w-8 h-8" />
 								<span className="hidden lg:block">WhatsApp</span>
 							</a>
 						</li>
 
 						<li>
-							<a title="YouTube" className="text-sm flex flex-row items-center gap-2">
+							<a title="YouTube" href="https://www.youtube.com/bundestag" target="_blank" className="text-sm flex flex-row items-center gap-2">
 								<IconYouTube className="w-8 h-8" />
 								<span className="hidden lg:block">YouTube</span>
 							</a>
