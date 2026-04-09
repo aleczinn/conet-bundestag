@@ -13,7 +13,6 @@ export interface Locale {
 
 export const locales: Locale[] = [
 	{ language: 'de', country: 'DE', storyblokCode: 'default', label: 'Deutsch' },
-	{ language: 'de', country: 'AT', storyblokCode: 'de-at', label: 'Deutsch (Österreich)' },
 	{ language: 'en', country: 'US', storyblokCode: 'en', label: 'English' },
 ];
 
