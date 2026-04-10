@@ -5,6 +5,8 @@ import { FadeImage } from '@/components/ui/FadeImage';
 
 type Props = Pick<StoryblokMediaProps, 'asset' | 'width' | 'height' | 'priority' | 'className'>;
 
+const DEFAULT_SIZES = "(max-width: 768px) 100vw, 50vw"
+
 export function StoryblokImage({ asset, width, height, priority, className }: Props) {
 	const intrinsic = parseStoryblokDimensions(asset.filename);
 	const dims = resolveDimensions(width, height, intrinsic);
@@ -17,6 +19,7 @@ export function StoryblokImage({ asset, width, height, priority, className }: Pr
 			width: dims.width,
 			height: dims.height,
 			style: { width: '100%', height: 'auto' } as const,
+			sizes: DEFAULT_SIZES,
 			className,
 		};
 
@@ -25,7 +28,7 @@ export function StoryblokImage({ asset, width, height, priority, className }: Pr
 			return (
 				<Image {...SharedProps}
 							 priority={priority}
-							 className={`skeleton-pulse ${className ?? ''}`}
+							 className={`bg-gray-20 ${className ?? ''}`}
 				/>
 			);
 		}
@@ -42,7 +45,7 @@ export function StoryblokImage({ asset, width, height, priority, className }: Pr
 						 alt={alt}
 						 fill
 						 priority={priority}
-						 sizes="(max-width: 768px) 100vw, 50vw"
+						 sizes={DEFAULT_SIZES}
 						 style={{ objectFit: 'cover' }}
 			/>
 		</div>
