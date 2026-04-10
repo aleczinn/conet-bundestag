@@ -28,6 +28,7 @@ export function StoryblokImage({ asset, width, height, priority, className }: Pr
 			return (
 				<Image {...SharedProps}
 							 priority={priority}
+							 fetchPriority="high"
 							 className={`bg-gray-20 ${className ?? ''}`}
 				/>
 			);
