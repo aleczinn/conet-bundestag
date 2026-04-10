@@ -3,7 +3,7 @@ import { renderRichText, SbBlokData } from '@storyblok/react';
 import Section from '@/components/layout/Section';
 import { Button } from '@/components/ui/Button';
 import { Headline } from '@/components/ui/Headline';
-import StoryblokMedia from '@/components/ui/StoryblokMedia';
+import { StoryblokMedia } from '@/components/storyblok/StoryblokMedia';
 
 type Layout = 'media_left' | 'media_right';
 
@@ -30,9 +30,6 @@ const MediaWithText = ({ blok, priority = false }: MediaWithTextProps) => {
 												width={800}
 												priority={priority}
 												className="rounded-2xl"
-												imgProps={{
-													sizes: '(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 640px',
-												}}
 				/>
 			</div>
 
