@@ -1,5 +1,6 @@
 import { storyblokEditable } from '@storyblok/react/rsc';
 import { SbBlokData } from '@storyblok/react';
+import Section from '@/components/layout/Section';
 
 interface HeroProps {
 	blok: SbBlokData & {
@@ -10,11 +11,17 @@ interface HeroProps {
 }
 
 const Hero = ({ blok, priority = false }: HeroProps) => {
+	const headingId = `h-${blok._uid}`;
+
 	return (
-		<div className="bg-amber-600 w-full min-h-80 flex flex-col justify-center items-center" {...storyblokEditable(blok)}>
-			<h1>{blok.headline}</h1>
+		<Section variant="none"
+						 className="bg-amber-600 w-full min-h-80 flex flex-col justify-center items-center"
+						 aria-labelledby={blok.headline ? headingId : undefined}
+						 {...storyblokEditable(blok)}
+		>
+			<h1 id={headingId}>{blok.headline}</h1>
 			<p>{blok.text}</p>
-		</div>
+		</Section>
 	);
 };
 

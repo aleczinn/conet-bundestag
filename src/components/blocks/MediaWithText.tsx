@@ -21,7 +21,7 @@ interface MediaWithTextProps {
 }
 
 const MediaWithText = ({ blok, priority = false }: MediaWithTextProps) => {
-	const headingId = `media-text-${blok._uid}`;
+	const headingId = `mwt-${blok._uid}`;
 	const isMediaLeft = blok.layout === 'media_left';
 
 	return (
