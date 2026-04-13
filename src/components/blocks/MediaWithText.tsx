@@ -29,6 +29,7 @@ const MediaWithText = ({ blok, priority = false }: MediaWithTextProps) => {
 				<StoryblokMedia asset={blok.media}
 												width={800}
 												priority={priority}
+												sizes="(min-width: 768px) 712px, 100vw"
 												className="rounded-2xl"
 				/>
 			</div>
