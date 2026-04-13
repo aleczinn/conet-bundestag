@@ -14,7 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
 			return availableLanguages.map((lang) => ({
 				url: `${BASE_URL}/${lang}/${path}`.replace(/\/+$/, ''),
-				lastModified: link.published_at,
+				lastModified: new Date(link.published_at),
 				changeFrequency: 'weekly' as const,
 				priority: link.slug === 'home' ? 1 : 0.8,
 				alternates: {
