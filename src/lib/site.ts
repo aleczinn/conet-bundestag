@@ -5,8 +5,9 @@ export const BASE_URL =
 	process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}` ||
 	'http://localhost:3000';
 
-export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Deutscher Bundestag';
 export const SITE_SHORTCUT = process.env.NEXT_PUBLIC_SITE_SHORTCUT || 'BT';
+export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Deutscher Bundestag';
+export const SITE_DESCRIPTION = process.env.NEXT_PUBLIC_SITE_DESCRIPTION || '';
 
 /**
  * Entfernt das Locale-Prefix aus dem Catch-All-Slug und gibt den

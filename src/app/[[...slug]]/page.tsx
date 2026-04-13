@@ -2,7 +2,7 @@ import { StoryblokStory } from '@storyblok/react/rsc';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { getLinks, getStory } from '@/lib/storyblok-queries';
-import { BASE_URL, extractContentSlug, SITE_NAME } from '@/lib/site';
+import { BASE_URL, extractContentSlug, SITE_DESCRIPTION, SITE_NAME } from '@/lib/site';
 import Breadcrumbs, { buildBreadcrumbs } from '@/components/layout/Breadcrumbs';
 import {
 	availableLanguages,
@@ -40,6 +40,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 	const content = story.content;
 
 	const path = contentSlug === 'home' ? '' : contentSlug;
+	const description = content.seo_description || SITE_DESCRIPTION || '';
 	const canonicalUrl = content.seo_canonical || `${BASE_URL}/${locale.language}/${path}`.replace(/\/+$/, '');
 	const ogImage = content.seo_og_image?.filename || `${BASE_URL}/og-default.jpg`;
 	const pageTitle = content.seo_title || story.name;
@@ -57,7 +58,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 	return {
 		title: pageTitle,
-		description: content.seo_description || '',
+		description: description,
 		alternates: {
 			canonical: canonicalUrl,
 			languages,
@@ -71,7 +72,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 			alternateLocale: getAlternateOgLocales(locale),
 			siteName: SITE_NAME,
 			title: `${SITE_NAME} - ${pageTitle}`,
-			description: content.seo_description || '',
+			description: description,
 			url: canonicalUrl,
 			type: content.seo_og_type || 'website',
 			images: [{ url: ogImage, width: 1200, height: 630 }],
@@ -79,7 +80,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 		twitter: {
 			card: 'summary_large_image',
 			title: `${SITE_NAME} - ${pageTitle}`,
-			description: content.seo_description || '',
+			description: description,
 			images: [ogImage],
 		},
 	};
@@ -135,7 +136,7 @@ export default async function Page({ params }: PageProps) {
 	const breadcrumbs = await buildBreadcrumbs(locale, contentSlug);
 
 	return (
-		<main className="flex-1 flex flex-col">
+		<main id="main-content" className="flex-1 flex flex-col">
 			<Breadcrumbs locale={locale} slug={contentSlug} items={breadcrumbs} includeSchema={true} />
 			<div className="flex-1">
 				<StoryblokStory story={result.data.story} />
