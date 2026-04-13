@@ -13,7 +13,7 @@ export default function Navigation({ locale }: NavigationProps) {
 	const titleMenu = t(locale, 'generic.menu');
 
 	return (
-		<Section as="nav" variant="full" className="h-16 bg-gray-20" aria-label={t(locale, 'header.navigation.flyout')}>
+		<Section id="main-navigation" as="nav" variant="full" className="h-16 bg-gray-20" aria-label={t(locale, 'header.navigation.flyout')}>
 			<ul className="flex flex-row gap-6 justify-end items-center h-full lg:justify-between lg:gap-0">
 				<li className="hidden lg:flex flex-col items-center">
 					<Link href="/" className="text-gray-90 text-lg hover:cursor-pointer">

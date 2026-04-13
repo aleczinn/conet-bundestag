@@ -4,6 +4,11 @@
         "search": "Suche",
         "menu": "Menü"
     },
+    "skiplinks": {
+        "label": "Sprunglinks",
+        "to_main": "Zum Hauptinhalt",
+        "to_navigation": "Zur Navigation"
+    },
     "header": {
         "sign_language": "Gebärdensprache",
         "simple_language": "Leichte Sprache",

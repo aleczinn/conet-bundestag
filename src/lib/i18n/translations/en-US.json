@@ -4,6 +4,11 @@
         "search": "Search",
         "menu": "Menu"
     },
+    "skiplinks": {
+        "label": "Skiplinks",
+        "to_main": "Skip to main content",
+        "to_navigation": "Skip to navigation"
+    },
     "header": {
         "sign_language": "Sign language",
         "simple_language": "Simple language",
