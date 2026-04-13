@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { getLinks } from '@/lib/storyblok-queries';
 import { BASE_URL } from '@/lib/site';
 import { Locale } from '@/lib/locale/locales';
-import Container from '@/components/layout/Container';
 import { t } from '@/lib/i18n';
+import Section from '@/components/layout/Section';
 
 interface BreadcrumbsProps {
 	locale: Locale;
@@ -79,8 +79,10 @@ export default async function Breadcrumbs({ locale, slug, items, includeSchema =
 				/>
 			)}
 
-			<Container className="h-16 flex flex-row items-center bg-gray-10"
-								 aria-label={t(locale, 'header.navigation.breadcrumb')}
+			<Section as="nav"
+							 variant="full"
+							 className="h-16 flex flex-row items-center bg-gray-10"
+							 aria-label={t(locale, 'header.navigation.breadcrumb')}
 			>
 				<ol className="flex flex-wrap items-center gap-2">
 					{breadcrumbs.map((item, index) => {
@@ -105,7 +107,7 @@ export default async function Breadcrumbs({ locale, slug, items, includeSchema =
 						);
 					})}
 				</ol>
-			</Container>
+			</Section>
 		</>
 	);
 }

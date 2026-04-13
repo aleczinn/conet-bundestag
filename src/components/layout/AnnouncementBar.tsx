@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { renderRichText } from '@storyblok/react';
-import Container from '@/components/layout/Container';
 import { t } from '@/lib/i18n';
 import { Locale } from '@/lib/locale/locales';
+import Section from '@/components/layout/Section';
 
 export type AnnouncementBarItem = {
 	_uid: string;
@@ -51,7 +51,7 @@ export default function AnnouncementBar({ locale, item }: AnnouncementBarProps) 
 	const titleDismiss = t(locale, 'header.announcement_bar.dismiss');
 
 	return (
-		<Container className={`w-full py-2 ${colors[item.type] ?? colors.info}`}>
+		<Section as="div" variant="full" className={`w-full py-2 ${colors[item.type] ?? colors.info}`}>
 			<div className="flex flex-row items-center justify-center relative">
 				<div className="text-center text-sm md:text-base"
 							dangerouslySetInnerHTML={{ __html: renderRichText(item.message) ?? '' }}
@@ -65,6 +65,6 @@ export default function AnnouncementBar({ locale, item }: AnnouncementBarProps) 
 					✕
 				</button>
 			</div>
-		</Container>
+		</Section>
 	)
 }

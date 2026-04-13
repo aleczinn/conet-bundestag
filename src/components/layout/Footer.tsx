@@ -1,14 +1,14 @@
-import Container from '@/components/layout/Container';
 import { IconInstagram, IconLinkedIn, IconWhatsApp, IconYouTube } from '@/components/icons';
 import IconMastodon from '@/components/icons/IconMastodon';
 import Link from 'next/link';
+import Section from '@/components/layout/Section';
 
 export default function Footer() {
 	const currentYear = new Date().getFullYear();
 
 	return (
 		<footer className="pb-24 w-full bg-white">
-			<Container className="py-8">
+			<Section as="div" variant="full" className="py-8">
 				<div className="flex flex-col items-start md:flex-row justify-between gap-y-8 mb-4">
 					<ul className="flex flex-row items-center gap-4 order-1">
 						<li>
@@ -79,7 +79,7 @@ export default function Footer() {
 						</li>
 					</ul>
 				</div>
-			</Container>
+			</Section>
 		</footer>
 	);
 }

@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { IconEasy, IconGlobe, IconSign } from '@/components/icons';
-import Container from '@/components/layout/Container';
 import LocaleSwitcher from '@/components/layout/LocaleSwitcher';
 import { Locale } from '@/lib/locale/locales';
 import { t } from '@/lib/i18n';
+import Section from '@/components/layout/Section';
 
 interface ServiceBarProps {
 	locale: Locale;
@@ -19,7 +19,7 @@ export default function ServiceBar({ locale }: ServiceBarProps) {
 	const titleBackToGerman = t(locale, 'header.back_to_german');
 
 	return (
-		<Container as="nav" className="h-10 bg-gray-10" aria-label="Servicenavigation">
+		<Section as="nav" variant="full" className="h-10 bg-gray-10" aria-label="Servicenavigation">
 			<ul className="h-full flex flex-row justify-end items-center gap-8">
 				{(isPageGerman || isLeichteSprache) && (
 					<li>
@@ -60,6 +60,6 @@ export default function ServiceBar({ locale }: ServiceBarProps) {
 					<LocaleSwitcher locale={locale} />
 				</li>
 			</ul>
-		</Container>
+		</Section>
 	);
 }
