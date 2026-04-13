@@ -10,6 +10,7 @@ export type StoryblokMediaProps = {
 	height?: number;
 	priority?: boolean;
 	className?: string;
+	sizes?: string;
 	/** Optionale Untertitel-URL (VTT) für lokale Videos */
 	captionsSrc?: string;
 }

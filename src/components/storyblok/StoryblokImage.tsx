@@ -3,11 +3,11 @@ import { StoryblokMediaProps } from '@/components/storyblok/StoryblokMedia';
 import { parseStoryblokDimensions, resolveDimensions } from '@/components/storyblok/utils';
 import { FadeImage } from '@/components/ui/FadeImage';
 
-type Props = Pick<StoryblokMediaProps, 'asset' | 'width' | 'height' | 'priority' | 'className'>;
+type Props = Pick<StoryblokMediaProps, 'asset' | 'width' | 'height' | 'priority' | 'className' | 'sizes'>;
 
 const DEFAULT_SIZES = "(max-width: 768px) 100vw, 50vw"
 
-export function StoryblokImage({ asset, width, height, priority, className }: Props) {
+export function StoryblokImage({ asset, width, height, priority, className, sizes }: Props) {
 	const intrinsic = parseStoryblokDimensions(asset.filename);
 	const dims = resolveDimensions(width, height, intrinsic);
 	const alt = asset.alt ?? asset.title ?? '';
@@ -19,7 +19,7 @@ export function StoryblokImage({ asset, width, height, priority, className }: Pr
 			width: dims.width,
 			height: dims.height,
 			style: { width: '100%', height: 'auto' } as const,
-			sizes: DEFAULT_SIZES,
+			sizes: sizes ?? DEFAULT_SIZES,
 			className,
 		};
 
