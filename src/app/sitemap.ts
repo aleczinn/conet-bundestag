@@ -11,10 +11,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		.filter((link: any) => !link.is_folder && !link.slug?.startsWith('config'))
 		.flatMap((link: any) => {
 			const path = link.slug === 'home' ? '' : link.slug;
+			const lastModified = toDate(link.published_at);
 
 			return availableLanguages.map((lang) => ({
 				url: `${BASE_URL}/${lang}/${path}`.replace(/\/+$/, ''),
-				lastModified: new Date(link.published_at),
+				...(lastModified && { lastModified }),
 				changeFrequency: 'weekly' as const,
 				priority: link.slug === 'home' ? 1 : 0.8,
 				alternates: {
@@ -27,4 +28,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 				},
 			}));
 		});
+}
+
+function toDate(value: unknown): Date | undefined {
+	if (!value || typeof value !== 'string') return undefined;
+	const date = new Date(value);
+	return isNaN(date.getTime()) ? undefined : date;
 }
