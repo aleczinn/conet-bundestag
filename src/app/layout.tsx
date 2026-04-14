@@ -9,6 +9,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import AnnouncementBar from '@/components/layout/AnnouncementBar';
 import { getGlobalConfig } from '@/lib/storyblok-queries';
+import { notoSans, notoSerif, notoSerifExtra } from '@/app/fonts';
 
 export const metadata: Metadata = {
 	metadataBase: new URL(BASE_URL),
@@ -29,7 +30,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
 
 	return (
 		<StoryblokProvider>
-			<html lang={locale.language} data-scroll-behavior="smooth">
+			<html lang={locale.language} className={`${notoSans.variable} ${notoSerif.variable} ${notoSerifExtra.variable}`} data-scroll-behavior="smooth">
 				<body className="bg-white subpixel-antialiased flex flex-col w-full min-h-screen">
 					<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
 							'@context': 'https://schema.org',
