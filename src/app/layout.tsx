@@ -31,6 +31,24 @@ export default async function RootLayout({ children }: RootLayoutProps) {
 		<StoryblokProvider>
 			<html lang={locale.language} data-scroll-behavior="smooth">
 				<body className="bg-white subpixel-antialiased flex flex-col w-full min-h-screen">
+					<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+							'@context': 'https://schema.org',
+							'@type': 'Organization',
+							name: SITE_NAME,
+							url: BASE_URL,
+							logo: `${BASE_URL}/logo.png`,
+							sameAs: [
+								'https://www.instagram.com/bundestag/',
+								'https://www.linkedin.com/company/deutscher-bundestag-verwaltung',
+							],
+						}) }} />
+					<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+							'@context': 'https://schema.org',
+							'@type': 'WebSite',
+							name: SITE_NAME,
+							url: BASE_URL,
+							inLanguage: 'de-DE'
+						}) }} />
 				  <SkipLinks locale={locale} />
 					{activeAnnouncementBar && <AnnouncementBar locale={locale} item={activeAnnouncementBar} />}
 					<Header/>
