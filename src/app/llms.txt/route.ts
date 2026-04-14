@@ -1,33 +1,41 @@
 import { BASE_URL, SITE_NAME, SITE_DESCRIPTION } from '@/lib/site';
 import { getLinks } from '@/lib/storyblok-queries';
 import { DEFAULT_LOCALE } from '@/lib/locale/locales';
+import { getSlugMap, getTitle, translatePath } from '@/lib/locale/slug-map';
 
 export const revalidate = 3600;
 
 export async function GET() {
-// 	const { data } = await getLinks();
-// 	const links = Object.values(data.links ?? {})
-// 		.filter((l: any) => !l.is_folder && !l.slug?.startsWith('config'))
-// 		.map((l: any) => {
-// 			const path = l.slug === 'home' ? '' : l.slug;
-// 			return `- [${l.name}](${BASE_URL}/${DEFAULT_LOCALE.language}/${path})`;
-// 		})
-// 		.join('\n');
-//
-// 	const content = `# ${SITE_NAME}
-//
-// > ${SITE_DESCRIPTION ?? ''}
-//
-// ## Seiten
-//
-// ${links}
-//
-// ## Weitere Ressourcen
-//
-// - [Sitemap](${BASE_URL}/sitemap.xml)
-// `;
+	const map = await getSlugMap();
 
-	const content = ``;
+	const lines: string[] = [];
+
+	for (const entry of map.byReal.values()) {
+		if (entry.realSlug === 'home') continue;
+
+		const path = translatePath(map.byReal, entry.realSlug, DEFAULT_LOCALE.language);
+		const title = getTitle(entry, DEFAULT_LOCALE.language);
+		lines.push(`- [${title}](${BASE_URL}/${DEFAULT_LOCALE.language}/${path})`);
+	}
+
+	const homeEntry = map.byReal.get('home');
+	const homeTitle = homeEntry
+		? getTitle(homeEntry, DEFAULT_LOCALE.language)
+		: SITE_NAME;
+
+	const content = `# ${SITE_NAME}
+
+> ${SITE_DESCRIPTION ?? ''}
+
+## Seiten
+
+- [${homeTitle}](${BASE_URL}/${DEFAULT_LOCALE.language})
+${lines.join('\n')}
+
+## Weitere Ressourcen
+
+- [Sitemap](${BASE_URL}/sitemap.xml)
+`;
 
 	return new Response(content, {
 		headers: { 'Content-Type': 'text/plain; charset=utf-8' },
