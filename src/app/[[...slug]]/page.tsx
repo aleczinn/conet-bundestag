@@ -9,11 +9,9 @@ import {
 	DEFAULT_LOCALE,
 	getAlternateOgLocales,
 	getOgLocale,
-	Locale, locales, toLocaleTag,
 } from '@/lib/locale/locales';
 import { t } from '@/lib/i18n';
 import { getServerLocale } from '@/lib/locale/server';
-import page from '@/components/blocks/Page';
 
 const BLOCKED_SLUGS = ["config"];
 
