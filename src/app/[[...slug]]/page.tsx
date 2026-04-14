@@ -13,6 +13,7 @@ import {
 } from '@/lib/locale/locales';
 import { t } from '@/lib/i18n';
 import { getServerLocale } from '@/lib/locale/server';
+import page from '@/components/blocks/Page';
 
 const BLOCKED_SLUGS = ["config"];
 
@@ -40,10 +41,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 	const content = story.content;
 
 	const path = contentSlug === 'home' ? '' : contentSlug;
+	const isHomepage = contentSlug === 'home';
 	const description = content.seo_description || SITE_DESCRIPTION || '';
 	const canonicalUrl = content.seo_canonical || `${BASE_URL}/${locale.language}/${path}`.replace(/\/+$/, '');
 	const ogImage = content.seo_og_image?.filename || `${BASE_URL}/og-default.jpg`;
-	const pageTitle = content.seo_title || story.name;
+
+	const browserTitle = content.title || story.name; // Browser-Tab: kurz, UI-orientiert
+	const socialTitle = content.seo_title || content.title || story.name; // Social Sharing: ausführlich, SEO-optimiert (Fallback auf title)
 
 	// hreflang URLs für alle Locales + x-default
 	const languages: Record<string, string> = {
@@ -56,8 +60,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 		),
 	};
 
-	return {
-		title: pageTitle,
+	const metadata: Metadata = {
 		description: description,
 		alternates: {
 			canonical: canonicalUrl,
@@ -70,8 +73,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 		openGraph: {
 			locale: getOgLocale(locale),
 			alternateLocale: getAlternateOgLocales(locale),
+			title: socialTitle,
 			siteName: SITE_NAME,
-			title: `${SITE_NAME} - ${pageTitle}`,
 			description: description,
 			url: canonicalUrl,
 			type: content.seo_og_type || 'website',
@@ -79,11 +82,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 		},
 		twitter: {
 			card: 'summary_large_image',
-			title: `${SITE_NAME} - ${pageTitle}`,
+			title: socialTitle,
 			description: description,
 			images: [ogImage],
 		},
-	};
+	}
+
+	// Titel nur setzen, wenn NICHT Homepage -> Home erbt vom layout default
+	if (!isHomepage) {
+		metadata.title = browserTitle;
+	}
+
+	return metadata;
 }
 
 /**
