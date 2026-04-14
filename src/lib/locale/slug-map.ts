@@ -36,12 +36,30 @@ export const getSlugMap = cache(async (): Promise<SlugMap> => {
 		});
 
 		for (const story of data.stories) {
-			const realSlug: string = story.full_slug;
-			if (BLOCKED_PREFIXES.some((p) => realSlug === p || realSlug.startsWith(`${p}/`))) continue;
+			// Language-Präfix strippen
+			let realSlug: string = story.full_slug;
+			const prefix = `${locale.storyblokCode}/`;
+			if (locale.storyblokCode !== 'default' && realSlug.startsWith(prefix)) {
+				realSlug = realSlug.slice(prefix.length);
+			}
 
-			const lastReal = realSlug.split('/').pop()!;
+			// Trailing-Slash entfernen (Startpages haben "abgeordnete/")
+			realSlug = realSlug.replace(/\/$/, '');
+
+			if (!realSlug) continue; // Sprach-Root-"Seite" überspringen, falls vorhanden
+
+			if (BLOCKED_PREFIXES.some((p) => realSlug === p || realSlug.startsWith(`${p}/`))) {
+				continue;
+			}
+
 			const content = story.content ?? {};
-			const segment = (content.slug && String(content.slug).trim()) || lastReal;
+
+			// Fallback-Kette: content.slug (übersetzt) → story.slug (Storyblok) → letztes Pfad-Segment
+			const segment =
+				(content.slug && String(content.slug).trim()) ||
+				story.slug ||
+				realSlug.split('/').pop()!;
+
 			const title = content.title || story.name;
 
 			const entry =
