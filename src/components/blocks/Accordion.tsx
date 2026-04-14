@@ -28,7 +28,7 @@ export default function Accordion({ blok }: AccordionProps) {
 		blok.items
 			.filter(
 				(item): item is AccordionItemData & { _uid: string } =>
-					typeof item._uid === 'string' && item.default_open === true,
+					typeof item._uid === 'string' && item.default_open,
 			)
 			.map((item) => item._uid),
 	);

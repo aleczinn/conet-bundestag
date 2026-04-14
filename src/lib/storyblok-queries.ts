@@ -8,18 +8,31 @@ interface GlobalConfig {
 	announcement_bars: AnnouncementBarItem[];
 }
 
-const getVersion = async (ignoreDraftMode = false) => {
+// const getVersion = async (ignoreDraftMode = false) => {
+// 	if (process.env.NODE_ENV === 'development') {
+// 		return 'draft' as const;
+// 	}
+//
+// 	if (ignoreDraftMode) {
+// 		return 'published' as const;
+// 	}
+//
+// 	const draft = await draftMode();
+// 	return draft.isEnabled ? 'draft' as const : 'published' as const;
+// };
+
+export async function getVersion(): Promise<'draft' | 'published'> {
 	if (process.env.NODE_ENV === 'development') {
-		return 'draft' as const;
+		return 'draft';
 	}
 
-	if (ignoreDraftMode) {
-		return 'published' as const;
+	try {
+		const draft = await draftMode();
+		return draft.isEnabled ? 'draft' : 'published';
+	} catch {
+		return 'published';
 	}
-
-	const draft = await draftMode();
-	return draft.isEnabled ? 'draft' as const : 'published' as const;
-};
+}
 
 /**
  * Lädt eine Storyblok Story anhand des Slugs.
@@ -57,9 +70,9 @@ export const getStory = cache(async (locale: Locale = DEFAULT_LOCALE, slug: stri
  * (z.B. wenn mehrere Komponenten gleichzeitig rendern).
  * ISR-Revalidierung übernimmt `cachedFetch` in storyblok.ts (60s in prod).
  */
-export const getLinks = cache(async (locale?: Locale, ignoreDraftMode = false) => {
+export const getLinks = cache(async (locale?: Locale) => {
 	const storyblokApi = getStoryblokApi();
-	const version = await getVersion(ignoreDraftMode);
+	const version = await getVersion();
 
 	return storyblokApi.get('cdn/links', {
 		version,

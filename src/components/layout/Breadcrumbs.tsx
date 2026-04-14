@@ -1,13 +1,13 @@
 import Link from 'next/link';
-import { getLinks } from '@/lib/storyblok-queries';
 import { BASE_URL } from '@/lib/site';
 import { Locale } from '@/lib/locale/locales';
 import { t } from '@/lib/i18n';
 import Section from '@/components/layout/Section';
+import { getSlugMap, getTitle, PageEntry } from '@/lib/locale/slug-map';
 
 interface BreadcrumbsProps {
 	locale: Locale;
-	slug: string;
+	entry: PageEntry;
 	items?: BreadcrumbItem[];
 	/** LD+JSON Schema nur einmal im DOM rendern */
 	includeSchema?: boolean;
@@ -18,40 +18,41 @@ interface BreadcrumbItem {
 	href: string;
 }
 
-export async function buildBreadcrumbs(locale: Locale, slug: string): Promise<BreadcrumbItem[]> {
-	const segment = locale.language;
+export async function buildBreadcrumbs(locale: Locale, entry: PageEntry): Promise<BreadcrumbItem[]> {
+	const map = await getSlugMap();
+	const homeEntry = map.byReal.get('home');
 
-	const homeTitle = t(locale, 'home');
-	const breadcrumbs: BreadcrumbItem[] = [
-		{ name: homeTitle, href: `/${segment}` },
+	const crumbs: BreadcrumbItem[] = [
+		{
+			name: homeEntry ? getTitle(homeEntry, locale.language) : t(locale, 'home'),
+			href: `/${locale.language}`,
+		},
 	];
 
-	if (slug === 'home') {
-		return breadcrumbs;
+	// Wenn Startseite dann return direkt
+	if (entry.realSlug === 'home') {
+		return crumbs;
 	}
 
-	const { data } = await getLinks();
-	const links = data.links ?? {};
+	const parts = entry.realSlug.split('/');
+	let realCum = '';
+	let translatedCum = '';
 
-	const slugMap = new Map<string, string>();
-	Object.values(links).forEach((link) => {
-		if (link.slug && link.name) {
-			slugMap.set(link.slug, link.name);
-		}
-	});
+	for (const part of parts) {
+		realCum = realCum ? `${realCum}/${part}` : part;
+		const current = map.byReal.get(realCum);
+		if (!current) continue;
 
-	// Kumulativen Pfad aufbauen: "a/b/c" -> ["a", "a/b", "a/b/c"]
-	let cumulativePath = '';
-	for (const segment of slug.split('/').filter(Boolean)) {
-		cumulativePath = cumulativePath ? `${cumulativePath}/${segment}` : segment;
-		const name = slugMap.get(cumulativePath);
+		const segment = current.segments[locale.language] ?? part;
+		translatedCum = translatedCum ? `${translatedCum}/${segment}` : segment;
 
-		if (name) {
-			breadcrumbs.push({ name, href: `/${locale.language}/${cumulativePath}` });
-		}
+		crumbs.push({
+			name: getTitle(current, locale.language),
+			href: `/${locale.language}/${translatedCum}`,
+		});
 	}
 
-	return breadcrumbs;
+	return crumbs;
 }
 
 function buildBreadcrumbSchema(breadcrumbs: BreadcrumbItem[]) {
@@ -67,8 +68,8 @@ function buildBreadcrumbSchema(breadcrumbs: BreadcrumbItem[]) {
 	};
 }
 
-export default async function Breadcrumbs({ locale, slug, items, includeSchema = false }: BreadcrumbsProps) {
-	const breadcrumbs = items ?? await buildBreadcrumbs(locale, slug);
+export default async function Breadcrumbs({ locale, entry, items, includeSchema = false }: BreadcrumbsProps) {
+	const breadcrumbs = items ?? await buildBreadcrumbs(locale, entry);
 	const breadcrumbsSchema = buildBreadcrumbSchema(breadcrumbs);
 
 	return (
