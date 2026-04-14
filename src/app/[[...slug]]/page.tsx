@@ -1,8 +1,8 @@
 import { StoryblokStory } from '@storyblok/react/rsc';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import { getLinks, getStory } from '@/lib/storyblok-queries';
-import { BASE_URL, extractContentSlug, SITE_DESCRIPTION, SITE_NAME } from '@/lib/site';
+import { getStory } from '@/lib/storyblok-queries';
+import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from '@/lib/site';
 import Breadcrumbs, { buildBreadcrumbs } from '@/components/layout/Breadcrumbs';
 import {
 	availableLanguages,
@@ -12,9 +12,7 @@ import {
 } from '@/lib/locale/locales';
 import { t } from '@/lib/i18n';
 import { getServerLocale } from '@/lib/locale/server';
-import { getSlugMap, translatePath } from '@/lib/locale/slug-map';
-
-const BLOCKED_SLUGS = ["config"];
+import { getSlugMap, PageEntry, translatePath } from '@/lib/locale/slug-map';
 
 interface PageProps {
 	params: Promise<{
@@ -22,13 +20,13 @@ interface PageProps {
 	}>;
 }
 
-/** Resolved den realSlug aus den URL-Segmenten oder gibt null zurück (→ 404). */
-async function resolveRealSlug(segments: string[] | undefined, lang: string): Promise<string | null> {
-	const translated = (segments ?? []).slice(1).join('/'); // ohne [lang]
-	if (!translated) return 'home';
-
+/** Resolved einen übersetzten URL-Pfad zur PageEntry oder null. */
+export async function resolveEntry(segments: string[] | undefined, lang: string,): Promise<PageEntry | null> {
+	const translatedPath = (segments ?? []).slice(1).join('/');
 	const map = await getSlugMap();
-	return map.byTranslated[lang]?.get(translated) ?? null;
+	const key = translatedPath || 'home';
+	const realSlug = map.byTranslated[lang]?.get(key) ?? (key === 'home' ? 'home' : null);
+	return realSlug ? map.byReal.get(realSlug) ?? null : null;
 }
 
 function get404Object(locale: Locale) {
@@ -41,23 +39,23 @@ function get404Object(locale: Locale) {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
 	const { slug } = await params;
 	const locale = await getServerLocale();
-	const realSlug = await resolveRealSlug(slug, locale.language);
+	const entry = await resolveEntry(slug, locale.language);
 
-	if (!realSlug) {
+	if (!entry) {
 		return get404Object(locale);
 	}
 
-	const result = await getStory(locale, realSlug);
+	const result = await getStory(locale, entry.realSlug);
 	if (!result?.data?.story) {
 		return get404Object(locale);
 	}
 
 	const story = result.data.story;
 	const content = story.content;
-	const isHomepage = realSlug === 'home';
+	const isHomepage = entry.realSlug === 'home';
 
 	const map = await getSlugMap();
-	const pathFor = (lang: string) => isHomepage ? '' : translatePath(map.byReal, realSlug, lang);
+	const pathFor = (lang: string) => isHomepage ? '' : translatePath(map.byReal, entry.realSlug, lang);
 
 	const canonical = content.seo_canonical || `${BASE_URL}/${locale.language}/${pathFor(locale.language)}`.replace(/\/+$/, '');
 
@@ -140,26 +138,26 @@ export async function generateStaticParams() {
 export default async function Page({ params }: PageProps) {
 	const { slug } = await params;
 	const locale = await getServerLocale();
-	const realSlug = await resolveRealSlug(slug, locale.language);
+	const entry = await resolveEntry(slug, locale.language);
 
-	if (!realSlug) {
+	if (!entry) {
 		return notFound();
 	}
 
-	const result = await getStory(locale, realSlug);
+	const result = await getStory(locale, entry.realSlug);
 	if (!result?.data?.story) {
 		return notFound();
 	}
 
-	const breadcrumbs = await buildBreadcrumbs(locale, realSlug);
+	const breadcrumbs = await buildBreadcrumbs(locale, entry);
 
 	return (
 		<main id="main-content" className="flex-1 flex flex-col">
-			<Breadcrumbs locale={locale} slug={realSlug} items={breadcrumbs} includeSchema={true} />
+			<Breadcrumbs locale={locale} entry={entry} items={breadcrumbs} includeSchema={true} />
 			<div className="flex-1">
 				<StoryblokStory story={result.data.story} />
 			</div>
-			<Breadcrumbs locale={locale} slug={realSlug} items={breadcrumbs} />
+			<Breadcrumbs locale={locale} entry={entry} items={breadcrumbs} />
 		</main>
 	)
 }
