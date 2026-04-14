@@ -20,7 +20,7 @@ interface MediaWithTextProps {
 	priority?: boolean;
 }
 
-const MediaWithText = ({ blok, priority = false }: MediaWithTextProps) => {
+export default function MediaWithText({ blok, priority = false }: MediaWithTextProps) {
 	const headingId = `mwt-${blok._uid}`;
 	const isMediaLeft = blok.layout === 'media_left';
 
@@ -64,5 +64,3 @@ const MediaWithText = ({ blok, priority = false }: MediaWithTextProps) => {
 		</Section>
 	);
 };
-
-export default MediaWithText;

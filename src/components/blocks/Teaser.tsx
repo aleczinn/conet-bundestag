@@ -7,7 +7,7 @@ interface TeaserProps {
 	};
 }
 
-const Teaser = ({ blok }: TeaserProps) => {
+export default function Teaser({ blok }: TeaserProps) {
 	return (
 		<div className="max-w-bt mx-auto w-full px-4 md:px-8">
 			<div className="bg-gray-90 text-gray-10 rounded-3xl text-center p-16 text-2xl font-bold" {...storyblokEditable(blok)}>
@@ -16,5 +16,3 @@ const Teaser = ({ blok }: TeaserProps) => {
 		</div>
 	);
 };
-
-export default Teaser;

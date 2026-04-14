@@ -7,14 +7,15 @@ interface PageProps {
 	};
 }
 
-const Page = ({ blok }: PageProps) => (
-	<div className="flex flex-col" {...storyblokEditable(blok)}>
-		{blok.body?.map((nestedBlok, index) => (
-			<div key={nestedBlok._uid} className={index % 2 !== 0 ? 'bg-white' : ''}>
-				<StoryblokServerComponent blok={nestedBlok} priority={index === 0} />
-			</div>
-		))}
-	</div>
-);
+export default function Page({ blok }: PageProps) {
+	return (
+		<div className="flex flex-col" {...storyblokEditable(blok)}>
+			{blok.body?.map((nestedBlok, index) => (
+				<div key={nestedBlok._uid} className={index % 2 !== 0 ? 'bg-white' : ''}>
+					<StoryblokServerComponent blok={nestedBlok} priority={index === 0} />
+				</div>
+			))}
+		</div>
+	);
+};
 
-export default Page;

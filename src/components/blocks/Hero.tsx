@@ -10,7 +10,7 @@ interface HeroProps {
 	priority?: boolean;
 }
 
-const Hero = ({ blok, priority = false }: HeroProps) => {
+export default function Hero({ blok, priority = false }: HeroProps) {
 	const headingId = `h-${blok._uid}`;
 
 	return (
@@ -24,5 +24,3 @@ const Hero = ({ blok, priority = false }: HeroProps) => {
 		</Section>
 	);
 };
-
-export default Hero;
