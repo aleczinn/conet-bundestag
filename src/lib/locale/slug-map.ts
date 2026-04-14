@@ -36,14 +36,14 @@ export const getSlugMap = cache(async (): Promise<SlugMap> => {
 		});
 
 		for (const story of data.stories) {
-			// Language-Präfix strippen
+			// Language-Präfix strippen: "en/abgeordnete/" -> "abgeordnete/"
 			let realSlug: string = story.full_slug;
 			const prefix = `${locale.storyblokCode}/`;
 			if (locale.storyblokCode !== 'default' && realSlug.startsWith(prefix)) {
 				realSlug = realSlug.slice(prefix.length);
 			}
 
-			// Trailing-Slash entfernen (Startpages haben "abgeordnete/")
+			// Trailing-Slash bei Startpages entfernen: "abgeordnete/" -> "abgeordnete"
 			realSlug = realSlug.replace(/\/$/, '');
 
 			if (!realSlug) continue; // Sprach-Root-"Seite" überspringen, falls vorhanden
@@ -54,7 +54,10 @@ export const getSlugMap = cache(async (): Promise<SlugMap> => {
 
 			const content = story.content ?? {};
 
-			// Fallback-Kette: content.slug (übersetzt) → story.slug (Storyblok) → letztes Pfad-Segment
+			// Fallback-Kette:
+			// 1. content.slug (übersetztes Feld)
+			// 2. story.slug (Storyblok-Slug der Story selbst)
+			// 3. letztes Pfad-Segment (Notnagel)
 			const segment =
 				(content.slug && String(content.slug).trim()) ||
 				story.slug ||
@@ -62,9 +65,7 @@ export const getSlugMap = cache(async (): Promise<SlugMap> => {
 
 			const title = content.title || story.name;
 
-			const entry =
-				byReal.get(realSlug) ??
-				({ realSlug, title: {}, segments: {} } as PageEntry);
+			const entry = byReal.get(realSlug) ?? ({ realSlug, title: {}, segments: {} } as PageEntry);
 			entry.title[locale.language] = title;
 			entry.segments[locale.language] = segment;
 			byReal.set(realSlug, entry);
@@ -84,11 +85,7 @@ export const getSlugMap = cache(async (): Promise<SlugMap> => {
 });
 
 /** Baut den übersetzten Pfad für einen realSlug in einer Sprache. */
-export function translatePath(
-	byReal: Map<string, PageEntry>,
-	realSlug: string,
-	lang: string,
-): string {
+export function translatePath(byReal: Map<string, PageEntry>, realSlug: string, lang: string): string {
 	const parts = realSlug.split('/');
 	return parts
 		.map((part, i) => {
