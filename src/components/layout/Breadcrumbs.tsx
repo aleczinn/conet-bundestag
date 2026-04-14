@@ -1,14 +1,13 @@
 import Link from 'next/link';
-import { getLinks } from '@/lib/storyblok-queries';
 import { BASE_URL } from '@/lib/site';
 import { Locale } from '@/lib/locale/locales';
 import { t } from '@/lib/i18n';
 import Section from '@/components/layout/Section';
-import { getSlugMap, getTitle } from '@/lib/locale/slug-map';
+import { getSlugMap, getTitle, PageEntry } from '@/lib/locale/slug-map';
 
 interface BreadcrumbsProps {
 	locale: Locale;
-	slug: string;
+	entry: PageEntry;
 	items?: BreadcrumbItem[];
 	/** LD+JSON Schema nur einmal im DOM rendern */
 	includeSchema?: boolean;
@@ -19,30 +18,40 @@ interface BreadcrumbItem {
 	href: string;
 }
 
-export async function buildBreadcrumbs(locale: Locale, realSlug: string): Promise<BreadcrumbItem[]> {
-	const crumbs: BreadcrumbItem[] = [
-		{ name: t(locale, 'home'), href: `/${locale.language}` },
-	];
-	if (realSlug === 'home') return crumbs;
-
+export async function buildBreadcrumbs(locale: Locale, entry: PageEntry): Promise<BreadcrumbItem[]> {
 	const map = await getSlugMap();
-	const parts = realSlug.split('/');
+	const homeEntry = map.byReal.get('home');
+
+	const crumbs: BreadcrumbItem[] = [
+		{
+			name: homeEntry ? getTitle(homeEntry, locale.language) : t(locale, 'home'),
+			href: `/${locale.language}`,
+		},
+	];
+
+	// Wenn Startseite dann return direkt
+	if (entry.realSlug === 'home') {
+		return crumbs;
+	}
+
+	const parts = entry.realSlug.split('/');
 	let realCum = '';
 	let translatedCum = '';
 
 	for (const part of parts) {
 		realCum = realCum ? `${realCum}/${part}` : part;
-		const entry = map.byReal.get(realCum);
-		if (!entry) continue;
+		const current = map.byReal.get(realCum);
+		if (!current) continue;
 
-		const segment = entry.segments[locale.language] ?? part;
+		const segment = current.segments[locale.language] ?? part;
 		translatedCum = translatedCum ? `${translatedCum}/${segment}` : segment;
 
 		crumbs.push({
-			name: getTitle(entry, locale.language),
+			name: getTitle(current, locale.language),
 			href: `/${locale.language}/${translatedCum}`,
 		});
 	}
+
 	return crumbs;
 }
 
@@ -59,8 +68,8 @@ function buildBreadcrumbSchema(breadcrumbs: BreadcrumbItem[]) {
 	};
 }
 
-export default async function Breadcrumbs({ locale, slug, items, includeSchema = false }: BreadcrumbsProps) {
-	const breadcrumbs = items ?? await buildBreadcrumbs(locale, slug);
+export default async function Breadcrumbs({ locale, entry, items, includeSchema = false }: BreadcrumbsProps) {
+	const breadcrumbs = items ?? await buildBreadcrumbs(locale, entry);
 	const breadcrumbsSchema = buildBreadcrumbSchema(breadcrumbs);
 
 	return (
