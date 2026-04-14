@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { IconEasy, IconGlobe, IconSign } from '@/components/icons';
-import LocaleSwitcher from '@/components/layout/LocaleSwitcher';
+import { IconEasy, IconSign } from '@/components/icons';
+import LocaleSwitcher from '@/components/layout/LocaleSwitcher.server';
 import { Locale } from '@/lib/locale/locales';
 import { t } from '@/lib/i18n';
 import Section from '@/components/layout/Section';

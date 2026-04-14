@@ -4,6 +4,7 @@ import { BASE_URL } from '@/lib/site';
 import { Locale } from '@/lib/locale/locales';
 import { t } from '@/lib/i18n';
 import Section from '@/components/layout/Section';
+import { getSlugMap, getTitle } from '@/lib/locale/slug-map';
 
 interface BreadcrumbsProps {
 	locale: Locale;
@@ -18,40 +19,31 @@ interface BreadcrumbItem {
 	href: string;
 }
 
-export async function buildBreadcrumbs(locale: Locale, slug: string): Promise<BreadcrumbItem[]> {
-	const segment = locale.language;
-
-	const homeTitle = t(locale, 'home');
-	const breadcrumbs: BreadcrumbItem[] = [
-		{ name: homeTitle, href: `/${segment}` },
+export async function buildBreadcrumbs(locale: Locale, realSlug: string): Promise<BreadcrumbItem[]> {
+	const crumbs: BreadcrumbItem[] = [
+		{ name: t(locale, 'home'), href: `/${locale.language}` },
 	];
+	if (realSlug === 'home') return crumbs;
 
-	if (slug === 'home') {
-		return breadcrumbs;
+	const map = await getSlugMap();
+	const parts = realSlug.split('/');
+	let realCum = '';
+	let translatedCum = '';
+
+	for (const part of parts) {
+		realCum = realCum ? `${realCum}/${part}` : part;
+		const entry = map.byReal.get(realCum);
+		if (!entry) continue;
+
+		const segment = entry.segments[locale.language] ?? part;
+		translatedCum = translatedCum ? `${translatedCum}/${segment}` : segment;
+
+		crumbs.push({
+			name: getTitle(entry, locale.language),
+			href: `/${locale.language}/${translatedCum}`,
+		});
 	}
-
-	const { data } = await getLinks();
-	const links = data.links ?? {};
-
-	const slugMap = new Map<string, string>();
-	Object.values(links).forEach((link) => {
-		if (link.slug && link.name) {
-			slugMap.set(link.slug, link.name);
-		}
-	});
-
-	// Kumulativen Pfad aufbauen: "a/b/c" -> ["a", "a/b", "a/b/c"]
-	let cumulativePath = '';
-	for (const segment of slug.split('/').filter(Boolean)) {
-		cumulativePath = cumulativePath ? `${cumulativePath}/${segment}` : segment;
-		const name = slugMap.get(cumulativePath);
-
-		if (name) {
-			breadcrumbs.push({ name, href: `/${locale.language}/${cumulativePath}` });
-		}
-	}
-
-	return breadcrumbs;
+	return crumbs;
 }
 
 function buildBreadcrumbSchema(breadcrumbs: BreadcrumbItem[]) {

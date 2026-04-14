@@ -8,10 +8,11 @@ import {
 	availableLanguages,
 	DEFAULT_LOCALE,
 	getAlternateOgLocales,
-	getOgLocale,
+	getOgLocale, Locale,
 } from '@/lib/locale/locales';
 import { t } from '@/lib/i18n';
 import { getServerLocale } from '@/lib/locale/server';
+import { getSlugMap, translatePath } from '@/lib/locale/slug-map';
 
 const BLOCKED_SLUGS = ["config"];
 
@@ -21,47 +22,65 @@ interface PageProps {
 	}>;
 }
 
+/** Resolved den realSlug aus den URL-Segmenten oder gibt null zurück (→ 404). */
+async function resolveRealSlug(segments: string[] | undefined, lang: string): Promise<string | null> {
+	const translated = (segments ?? []).slice(1).join('/'); // ohne [lang]
+	if (!translated) return 'home';
+
+	const map = await getSlugMap();
+	return map.byTranslated[lang]?.get(translated) ?? null;
+}
+
+function get404Object(locale: Locale) {
+	return {
+		title: t(locale, '404.title'),
+		robots: { index: false, follow: false },
+	};
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
 	const { slug } = await params;
-	const contentSlug = extractContentSlug(slug);
 	const locale = await getServerLocale();
+	const realSlug = await resolveRealSlug(slug, locale.language);
 
-	const result = await getStory(locale, contentSlug);
+	if (!realSlug) {
+		return get404Object(locale);
+	}
 
+	const result = await getStory(locale, realSlug);
 	if (!result?.data?.story) {
-		return {
-			title: t(locale, '404.title'),
-			robots: { index: false, follow: false },
-		};
+		return get404Object(locale);
 	}
 
 	const story = result.data.story;
 	const content = story.content;
+	const isHomepage = realSlug === 'home';
 
-	const path = contentSlug === 'home' ? '' : contentSlug;
-	const isHomepage = contentSlug === 'home';
-	const description = content.seo_description || SITE_DESCRIPTION || '';
-	const canonicalUrl = content.seo_canonical || `${BASE_URL}/${locale.language}/${path}`.replace(/\/+$/, '');
-	const ogImage = content.seo_og_image?.filename || `${BASE_URL}/og-default.jpg`;
+	const map = await getSlugMap();
+	const pathFor = (lang: string) => isHomepage ? '' : translatePath(map.byReal, realSlug, lang);
 
-	const browserTitle = content.title || story.name; // Browser-Tab: kurz, UI-orientiert
-	const socialTitle = content.seo_title || content.title || story.name; // Social Sharing: ausführlich, SEO-optimiert (Fallback auf title)
+	const canonical = content.seo_canonical || `${BASE_URL}/${locale.language}/${pathFor(locale.language)}`.replace(/\/+$/, '');
 
 	// hreflang URLs für alle Locales + x-default
 	const languages: Record<string, string> = {
-		'x-default': `${BASE_URL}/${DEFAULT_LOCALE.language}/${path}`.replace(/\/+$/, ''),
+		'x-default': `${BASE_URL}/${DEFAULT_LOCALE.language}/${pathFor(DEFAULT_LOCALE.language)}`.replace(/\/+$/, ''),
 		...Object.fromEntries(
 			availableLanguages.map((lang) => [
 				lang,
-				`${BASE_URL}/${lang}/${path}`.replace(/\/+$/, ''),
+				`${BASE_URL}/${lang}/${pathFor(lang)}`.replace(/\/+$/, ''),
 			]),
 		),
 	};
 
+	const description = content.seo_description || SITE_DESCRIPTION || '';
+	const ogImage = content.seo_og_image?.filename || `${BASE_URL}/og-default.jpg`;
+	const browserTitle = content.title || story.name; // Browser-Tab: kurz, UI-orientiert
+	const socialTitle = content.seo_title || content.title || story.name; // Social Sharing: ausführlich, SEO-optimiert (Fallback auf title)
+
 	const metadata: Metadata = {
 		description: description,
 		alternates: {
-			canonical: canonicalUrl,
+			canonical,
 			languages,
 		},
 		robots: {
@@ -74,7 +93,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 			title: socialTitle,
 			siteName: SITE_NAME,
 			description: description,
-			url: canonicalUrl,
+			url: canonical,
 			type: content.seo_og_type || 'website',
 			images: [{ url: ogImage, width: 1200, height: 630 }],
 		},
@@ -106,50 +125,41 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
  * SSG:  Build → alle Seiten vorgerendert → Request bekommt fertiges HTML  (schneller)
  */
 export async function generateStaticParams() {
-	const { data } = await getLinks(undefined, true);
-	const links = data.links ?? {};
+	const map = await getSlugMap();
+	const params: { slug: string[] }[] = [];
 
-	return Object.values(links)
-		.filter((link: any) => !link.is_folder)
-		.flatMap((link: any) => {
-			const path = link.slug === 'home' ? '' : link.slug;
-
-			return availableLanguages.map((lang) => ({
-				slug: path ? [lang, ...path.split('/')] : [lang],
-			}));
-		});
-}
-
-function isBlockedSlug(slug: string): boolean {
-	return BLOCKED_SLUGS.some(
-		(blocked) => slug === blocked || slug.startsWith(`${blocked}/`),
-	);
+	for (const lang of availableLanguages) {
+		for (const translated of map.byTranslated[lang].keys()) {
+			const parts = translated === 'home' ? [] : translated.split('/');
+			params.push({ slug: [lang, ...parts] });
+		}
+	}
+	return params;
 }
 
 export default async function Page({ params }: PageProps) {
 	const { slug } = await params;
-	const contentSlug = extractContentSlug(slug);
+	const locale = await getServerLocale();
+	const realSlug = await resolveRealSlug(slug, locale.language);
 
-	if (isBlockedSlug(contentSlug)) {
+	if (!realSlug) {
 		return notFound();
 	}
 
-	const locale = await getServerLocale();
-	const result = await getStory(locale, contentSlug);
-
+	const result = await getStory(locale, realSlug);
 	if (!result?.data?.story) {
 		return notFound();
 	}
 
-	const breadcrumbs = await buildBreadcrumbs(locale, contentSlug);
+	const breadcrumbs = await buildBreadcrumbs(locale, realSlug);
 
 	return (
 		<main id="main-content" className="flex-1 flex flex-col">
-			<Breadcrumbs locale={locale} slug={contentSlug} items={breadcrumbs} includeSchema={true} />
+			<Breadcrumbs locale={locale} slug={realSlug} items={breadcrumbs} includeSchema={true} />
 			<div className="flex-1">
 				<StoryblokStory story={result.data.story} />
 			</div>
-			<Breadcrumbs locale={locale} slug={contentSlug} items={breadcrumbs} />
+			<Breadcrumbs locale={locale} slug={realSlug} items={breadcrumbs} />
 		</main>
 	)
 }
