@@ -18,3 +18,4 @@ export { default as IconWhatsApp } from "./IconWhatsApp";
 export { default as IconYouTube } from "./IconYouTube";
 export { default as IconXing } from "./IconXing";
 export { default as IconPlay } from "./IconPlay";
+export { default as IconPlus } from "./IconPlus";
