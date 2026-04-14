@@ -9,9 +9,7 @@ export default function storyblokImageLoader({ src, width, quality }: {
 
 	const match = src.match(/\/(\d+)x(\d+)\//);
 	const originalWidth = match ? parseInt(match[1], 10) : Infinity;
+	const cappedWidth = Math.min(width, originalWidth); // Nie größer als das Original anfordern
 
-	// Nie größer als das Original anfordern
-	const cappedWidth = Math.min(width, originalWidth);
-
-	return `${src}/m/${cappedWidth}x0/filters:format(webp):quality(${quality ?? 75})`;
+	return `${src}/m/${cappedWidth}x0/filters:format(avif):quality(${quality ?? 75})`;
 }
