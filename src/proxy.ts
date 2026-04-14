@@ -46,7 +46,7 @@ export function proxy(request: NextRequest) {
 
 	const url = request.nextUrl.clone();
 	url.pathname = `/${targetLanguage}${pathname}`;
-	return NextResponse.redirect(url, { status: 307 });
+	return NextResponse.redirect(url, { status: 308 });
 }
 
 export const config = {
