@@ -2,13 +2,15 @@ import Link from 'next/link';
 import { IconBundestagDesktop, IconBundestagMobile } from '@/components/icons';
 import ServiceBar from '@/components/layout/ServiceBar';
 import Navigation from '@/components/layout/Navigation';
-import { getServerLocale } from '@/lib/locale/server';
+import { Locale } from '@/lib/locale/locales';
 import { t } from '@/lib/i18n';
 import Section from '@/components/layout/Section';
 
-export default async function Header() {
-	const locale = await getServerLocale();
+interface HeaderProps {
+	locale: Locale;
+}
 
+export default async function Header({ locale }: HeaderProps) {
 	return (
 		<header className="shadow-md shadow-gray-20">
 			<ServiceBar locale={locale} />

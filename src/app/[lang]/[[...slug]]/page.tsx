@@ -3,17 +3,18 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { getStory } from '@/lib/storyblok-queries';
 import { BASE_URL } from '@/lib/site';
+import { getSiteMeta } from '@/lib/site-server';
 import Breadcrumbs, { buildBreadcrumbs } from '@/components/layout/Breadcrumbs';
 import {
 	availableLanguages,
 	DEFAULT_LOCALE,
 	getAlternateOgLocales,
-	getOgLocale, Locale,
+	getLocaleFromLang,
+	getOgLocale,
+	Locale,
 } from '@/lib/locale/locales';
 import { t } from '@/lib/i18n';
-import { getServerLocale } from '@/lib/locale/server';
 import { getSlugMap, PageEntry, translatePath } from '@/lib/locale/slug-map';
-import { getSiteMeta } from '@/lib/site-server';
 
 interface PageProps {
 	params: Promise<{
@@ -23,15 +24,15 @@ interface PageProps {
 }
 
 /** Resolved einen übersetzten URL-Pfad zur PageEntry oder null. */
-export async function resolveEntry(segments: string[] | undefined, lang: string,): Promise<PageEntry | null> {
-	const translatedPath = (segments ?? []).slice(1).join('/');
+export async function resolveEntry(segments: string[] | undefined, lang: string): Promise<PageEntry | null> {
+	const translatedPath = (segments ?? []).join('/');
 	const map = await getSlugMap();
 	const key = translatedPath || 'home';
 	const realSlug = map.byTranslated[lang]?.get(key) ?? (key === 'home' ? 'home' : null);
 	return realSlug ? map.byReal.get(realSlug) ?? null : null;
 }
 
-function get404Object(locale: Locale) {
+function get404Object(locale: Locale): Metadata {
 	return {
 		title: t(locale, '404.title'),
 		robots: { index: false, follow: false },
@@ -39,8 +40,8 @@ function get404Object(locale: Locale) {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-	const { slug } = await params;
-	const locale = await getServerLocale();
+	const { lang, slug } = await params;
+	const locale = getLocaleFromLang(lang) ?? DEFAULT_LOCALE;
 
 	const [entry, siteMeta] = await Promise.all([
 		resolveEntry(slug, locale.language),
@@ -78,13 +79,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 	const browserTitle = content.title || story.name; // Browser-Tab: kurz, UI-orientiert
 	const socialTitle = content.seo_title || content.title || story.name; // Social Sharing: ausführlich, SEO-optimiert (Fallback auf title)
-
-	const title = isHomepage ? siteMeta.name : `${browserTitle} – ${siteMeta.name}`
 	const description = content.seo_description || siteMeta.description;
 	const ogImage = content.seo_og_image?.filename || `${BASE_URL}/og-default.jpg`;
 
-	const metadata: Metadata = {
-		title,
+	return {
+		title: isHomepage ? siteMeta.name : `${browserTitle} – ${siteMeta.name}`,
 		description,
 		alternates: {
 			canonical,
@@ -110,27 +109,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 			description: description,
 			images: [ogImage],
 		},
-	}
-
-	// Titel nur setzen, wenn NICHT Homepage -> Home erbt vom layout default
-	if (!isHomepage) {
-		metadata.title = browserTitle;
-	}
-
-	return metadata;
+	};
 }
 
-/**
- * Was macht diese Methode (SSG - Static Site Generation):
- *
- * Next.js rendert Seiten mit [[...slug]] standardmäßig on-demand – der Server generiert die HTML erst wenn jemand
- * die URL aufruft (SSR). Mit generateStaticParams sagst du Next.js beim Build: "Diese URLs existieren, rendere sie
- * jetzt als statisches HTML."
- *
- * Das Ergebnis landet als fertige HTML-Datei auf dem Server/CDN -> kein Datenbankzugriff bei jedem Request mehr.
- * SSR:  Request → Server fragt Storyblok → rendert HTML → Response        (langsamer)
- * SSG:  Build → alle Seiten vorgerendert → Request bekommt fertiges HTML  (schneller)
- */
 export async function generateStaticParams() {
 	const map = await getSlugMap();
 	const params: { lang: string; slug: string[] }[] = [];

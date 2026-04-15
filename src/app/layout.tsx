@@ -2,15 +2,7 @@ import './globals.css';
 import { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import StoryblokProvider from '../components/StoryblokProvider';
-import { BASE_URL, getActiveAnnouncementBar } from '@/lib/site';
-import { getServerLocale } from '@/lib/locale/server';
-import SkipLinks from '@/components/layout/SkipLinks';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-import AnnouncementBar from '@/components/layout/AnnouncementBar';
-import { getGlobalConfig } from '@/lib/storyblok-queries';
-import { notoSans, notoSerif, notoSerifExtra } from '@/app/fonts';
-import { getSiteMeta } from '@/lib/site-server';
+import { BASE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
 	metadataBase: new URL(BASE_URL),
@@ -20,15 +12,21 @@ interface RootLayoutProps {
 	children: ReactNode;
 }
 
+// Root-Layout ist absichtlich minimal: <html> und <body> kommen aus [lang]/layout.tsx
+// damit das lang-Attribut aus der URL kommt (statisch, kein headers()-Aufruf nötig).
 export default function RootLayout({ children }: RootLayoutProps) {
-	return (
-		<html data-scroll-behavior="smooth">
-			<body className="bg-white subpixel-antialiased flex flex-col w-full min-h-screen">
-				<StoryblokProvider>{children}</StoryblokProvider>
-			</body>
-		</html>
-	);
+	return <StoryblokProvider>{children}</StoryblokProvider>;
 }
+
+// export default function RootLayout({ children }: RootLayoutProps) {
+// 	return (
+// 		<html data-scroll-behavior="smooth">
+// 			<body className="bg-white subpixel-antialiased flex flex-col w-full min-h-screen">
+// 				<StoryblokProvider>{children}</StoryblokProvider>
+// 			</body>
+// 		</html>
+// 	);
+// }
 
 // export default async function RootLayout({ children }: RootLayoutProps) {
 // 	const locale = await getServerLocale();

@@ -1,5 +1,4 @@
 import { AnnouncementBarItem } from '@/components/layout/AnnouncementBar';
-import { getGlobalConfig } from '@/lib/storyblok-queries';
 
 export const BASE_URL =
 	process.env.NEXT_PUBLIC_BASE_URL ||
