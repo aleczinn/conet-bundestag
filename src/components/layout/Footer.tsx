@@ -2,9 +2,43 @@ import { IconInstagram, IconLinkedIn, IconWhatsApp, IconYouTube } from '@/compon
 import IconMastodon from '@/components/icons/IconMastodon';
 import Link from 'next/link';
 import Section from '@/components/layout/Section';
+import { Locale } from '@/lib/locale/locales';
+import { getSlugMap, translatePath } from '@/lib/locale/slug-map';
 
-export default function Footer() {
+interface FooterProps {
+	locale: Locale;
+}
+
+/** Baut einen lokalisierten Link-Pfad aus einem realSlug. */
+async function buildLocalizedHref(realSlug: string, lang: string): Promise<string> {
+	const map = await getSlugMap();
+	const entry = map.byReal.get(realSlug);
+	if (!entry) return `/${lang}`; // Fallback: Startseite, falls Slug fehlt
+
+	const path = translatePath(map.byReal, realSlug, lang);
+	return `/${lang}/${path}`;
+}
+
+export default async function Footer({ locale }: FooterProps) {
 	const currentYear = new Date().getFullYear();
+	const lang = locale?.language;
+
+	// Alle Footer-Links zentral als realSlugs definiert
+	const [
+		hilfeHref,
+		kontaktHref,
+		inhaltHref,
+		barrierefreiheitHref,
+		datenschutzHref,
+		impressumHref,
+	] = await Promise.all([
+		buildLocalizedHref('services/hilfe', lang),
+		buildLocalizedHref('services/kontakt', lang),
+		buildLocalizedHref('services/inhaltsuebersicht', lang),
+		buildLocalizedHref('services/barrierefreiheit', lang),
+		buildLocalizedHref('services/datenschutz', lang),
+		buildLocalizedHref('services/impressum', lang),
+	]);
 
 	return (
 		<footer className="pb-24 w-full bg-white">
@@ -12,15 +46,15 @@ export default function Footer() {
 				<div className="flex flex-col items-start md:flex-row justify-between gap-y-8 mb-4">
 					<ul className="flex flex-row items-center gap-4 order-1">
 						<li>
-							<Link className="bt-link-bold" title="Hilfe" href="/services/hilfe">Hilfe</Link>
+							<Link className="bt-link-bold" title="Hilfe" href={hilfeHref}>Hilfe</Link>
 						</li>
 
 						<li>
-							<Link className="bt-link-bold" title="Kontakt" href="/services/kontakt">Kontakt</Link>
+							<Link className="bt-link-bold" title="Kontakt" href={kontaktHref}>Kontakt</Link>
 						</li>
 
 						<li>
-							<Link className="bt-link-bold" title="Inhaltsübersicht" href="/services/inhaltsuebersicht">Inhaltsübersicht</Link>
+							<Link className="bt-link-bold" title="Inhaltsübersicht" href={inhaltHref}>Inhaltsübersicht</Link>
 						</li>
 					</ul>
 
@@ -67,15 +101,15 @@ export default function Footer() {
 
 					<ul className="flex flex-row items-center gap-4 md:order-2">
 						<li>
-							<Link className="bt-link" title="Barrierefreiheit" href="/services/barrierefreiheit">Barrierefreiheit</Link>
+							<Link className="bt-link" title="Barrierefreiheit" href={barrierefreiheitHref}>Barrierefreiheit</Link>
 						</li>
 
 						<li>
-							<Link className="bt-link" title="Datenschutz" href="/services/datenschutz">Datenschutz</Link>
+							<Link className="bt-link" title="Datenschutz" href={datenschutzHref}>Datenschutz</Link>
 						</li>
 
 						<li>
-							<Link className="bt-link" title="Impressum" href="/services/impressum">Impressum</Link>
+							<Link className="bt-link" title="Impressum" href={impressumHref}>Impressum</Link>
 						</li>
 					</ul>
 				</div>
