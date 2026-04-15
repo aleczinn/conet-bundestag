@@ -50,7 +50,7 @@ export default function MediaWithText({ blok, priority = false }: MediaWithTextP
 				)}
 
 				{blok.text && (
-					<div className="[&_p:not(:last-child)]:mb-2"
+					<div className="font-sans [&_p:not(:last-child)]:mb-2"
 								dangerouslySetInnerHTML={{ __html: renderRichText(blok.text) ?? '' }}
 					/>
 				)}
