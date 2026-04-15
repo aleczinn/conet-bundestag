@@ -64,7 +64,7 @@ export default async function LangLayout({ children, params,}: LangLayoutProps) 
 				)}
 				<Header locale={locale} />
 				{children}
-				<Footer />
+				<Footer locale={locale} />
 			</body>
 		</html>
 	)
