@@ -13,7 +13,9 @@ export function proxy(request: NextRequest) {
 
 	// Schon mit gültigem Sprachsegment? Durchlassen, fertig.
 	if (isValidLanguage(segments[0])) {
-		return NextResponse.next();
+		const response = NextResponse.next();
+		response.headers.set('x-pathname', pathname);
+		return response;
 	}
 
 	// Kein Sprachsegment -> einmaliger Redirect mit Detection
