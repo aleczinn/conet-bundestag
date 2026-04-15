@@ -86,3 +86,12 @@ export function resolveLocale(language: string, acceptLanguage?: string): Locale
 export function findByTag(tag: string): Locale | undefined {
 	return locales.find((l) => toLocaleTag(l) === tag);
 }
+
+/**
+ * Findet die Locale für ein URL-Segment (z.B. 'de' -> de-DE).
+ * Bei mehreren Varianten pro Sprache wird die erste genommen.
+ * Identisch zu getDefaultForLanguage, aber semantisch klarer im Page-Context.
+ */
+export function getLocaleFromLang(language: string): Locale | undefined {
+	return getDefaultForLanguage(language);
+}

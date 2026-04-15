@@ -5,48 +5,28 @@ import {
 	findByTag,
 	isValidLanguage,
 	resolveLocale,
-	toLocaleTag,
 } from '@/lib/locale/locales';
 
 export function proxy(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 	const segments = pathname.split('/').filter(Boolean);
-	const language = segments[0];
 
-	if (isValidLanguage(language)) {
-		const response = NextResponse.next();
-		response.headers.set('x-pathname', pathname);
-
-		// Bestehenden Cookie prüfen, sonst Accept-Language
-		const cookieTag = request.cookies.get(COOKIE_LOCALE)?.value;
-		const existing = cookieTag ? findByTag(cookieTag) : undefined;
-
-		const locale =
-			existing?.language === language
-				? existing
-				: resolveLocale(language, request.headers.get('accept-language') ?? '');
-
-		if (locale) {
-			const tag = toLocaleTag(locale);
-			response.headers.set('x-locale-tag', tag);
-			response.cookies.set(COOKIE_LOCALE, tag, {
-				maxAge: 60 * 60 * 24 * 365,
-				path: '/',
-				sameSite: 'lax',
-			});
-		}
-
-		return response;
+	// Schon mit gültigem Sprachsegment? Durchlassen, fertig.
+	if (isValidLanguage(segments[0])) {
+		return NextResponse.next();
 	}
 
-	// Kein gültiges Segment → Redirect
+	// Kein Sprachsegment -> einmaliger Redirect mit Detection
 	const cookieTag = request.cookies.get(COOKIE_LOCALE)?.value;
-	const fallback = cookieTag ? findByTag(cookieTag) : undefined;
-	const targetLanguage = fallback?.language ?? DEFAULT_LOCALE.language;
+	const fromCookie = cookieTag ? findByTag(cookieTag) : undefined;
+	const locale = fromCookie ?? resolveLocale(
+		DEFAULT_LOCALE.language,
+		request.headers.get('accept-language') ?? '',
+	) ?? DEFAULT_LOCALE;
 
 	const url = request.nextUrl.clone();
-	url.pathname = `/${targetLanguage}${pathname}`;
-	return NextResponse.redirect(url, { status: 308 });
+	url.pathname = `/${locale.language}${pathname}`;
+	return NextResponse.redirect(url, { status: 307 });
 }
 
 export const config = {
