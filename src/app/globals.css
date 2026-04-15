@@ -32,8 +32,8 @@
     --border-width-1: 1px;
 
     /* Font Families */
-    --font-sans: 'Noto Sans Display', Arial, Helv, Helvetica, Verdana, sans-serif;
-    --font-serif: 'Noto Serif', Georgia, Times New Roman, Times, serif;
+    --font-sans: var(--font-sans-noto, Arial, Helvetica, sans-serif);
+    --font-serif: var(--font-serif-noto, Georgia, 'Times New Roman', serif);
 
     /* Z-Index */
     --z-index-popup: 9000;
