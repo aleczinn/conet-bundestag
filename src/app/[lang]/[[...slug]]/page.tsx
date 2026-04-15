@@ -144,11 +144,19 @@ export default async function Page({ params }: PageProps) {
 	}
 
 	const breadcrumbs = await buildBreadcrumbs(locale, entry);
+	const isHomepage = entry.realSlug === 'home';
+	const siteMeta = await getSiteMeta(locale);
 
 	return (
 		<main id="main-content" className="flex-1 flex flex-col">
 			<Breadcrumbs locale={locale} entry={entry} items={breadcrumbs} includeSchema={true} />
 			<div className="flex-1">
+				{isHomepage && (
+					<div className="sr-only">
+						<h1>{siteMeta.name}</h1>
+					</div>
+				)}
+
 				<StoryblokStory story={result.data.story} />
 			</div>
 			<Breadcrumbs locale={locale} entry={entry} items={breadcrumbs} />
