@@ -1,8 +1,8 @@
 import { StoryblokStory } from '@storyblok/react/rsc';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import { getStory } from '@/lib/storyblok-queries';
-import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from '@/lib/site';
+import { getSiteMeta, getStory } from '@/lib/storyblok-queries';
+import { BASE_URL } from '@/lib/site';
 import Breadcrumbs, { buildBreadcrumbs } from '@/components/layout/Breadcrumbs';
 import {
 	availableLanguages,
@@ -50,6 +50,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 		return get404Object(locale);
 	}
 
+	const siteMeta = await getSiteMeta();
+
 	const story = result.data.story;
 	const content = story.content;
 	const isHomepage = entry.realSlug === 'home';
@@ -70,13 +72,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 		),
 	};
 
-	const description = content.seo_description || SITE_DESCRIPTION || '';
-	const ogImage = content.seo_og_image?.filename || `${BASE_URL}/og-default.jpg`;
 	const browserTitle = content.title || story.name; // Browser-Tab: kurz, UI-orientiert
 	const socialTitle = content.seo_title || content.title || story.name; // Social Sharing: ausführlich, SEO-optimiert (Fallback auf title)
 
+	const title = isHomepage ? siteMeta.name : `${browserTitle} – ${siteMeta.name}`
+	const description = content.seo_description || siteMeta.description;
+	const ogImage = content.seo_og_image?.filename || `${BASE_URL}/og-default.jpg`;
+
 	const metadata: Metadata = {
-		description: description,
+		title,
+		description,
 		alternates: {
 			canonical,
 			languages,
@@ -89,7 +94,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 			locale: getOgLocale(locale),
 			alternateLocale: getAlternateOgLocales(locale),
 			title: socialTitle,
-			siteName: SITE_NAME,
+			siteName: siteMeta.name,
 			description: description,
 			url: canonical,
 			type: content.seo_og_type || 'website',

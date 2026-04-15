@@ -1,13 +1,12 @@
 import { AnnouncementBarItem } from '@/components/layout/AnnouncementBar';
+import { getGlobalConfig } from '@/lib/storyblok-queries';
 
 export const BASE_URL =
 	process.env.NEXT_PUBLIC_BASE_URL ||
 	process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}` ||
 	'http://localhost:3000';
 
-export const SITE_SHORTCUT = process.env.NEXT_PUBLIC_SITE_SHORTCUT || 'BT';
-export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Deutscher Bundestag';
-export const SITE_DESCRIPTION = process.env.NEXT_PUBLIC_SITE_DESCRIPTION || '';
+export const SITE_SHORTCUT = process.env.NEXT_PUBLIC_SITE_SHORTCUT || 'WS';
 
 export function getActiveAnnouncementBar(items: AnnouncementBarItem[]): AnnouncementBarItem | null {
 	if (!items?.length) {

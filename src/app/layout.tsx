@@ -2,21 +2,17 @@ import './globals.css';
 import { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import StoryblokProvider from '../components/StoryblokProvider';
-import { BASE_URL, getActiveAnnouncementBar, SITE_NAME } from '@/lib/site';
+import { BASE_URL, getActiveAnnouncementBar } from '@/lib/site';
 import { getServerLocale } from '@/lib/locale/server';
 import SkipLinks from '@/components/layout/SkipLinks';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import AnnouncementBar from '@/components/layout/AnnouncementBar';
-import { getGlobalConfig } from '@/lib/storyblok-queries';
+import { getGlobalConfig, getSiteMeta } from '@/lib/storyblok-queries';
 import { notoSans, notoSerif, notoSerifExtra } from '@/app/fonts';
 
 export const metadata: Metadata = {
 	metadataBase: new URL(BASE_URL),
-	title: {
-		default: SITE_NAME,
-		template: `%s – ${SITE_NAME}`,
-	},
 };
 
 interface RootLayoutProps {
@@ -26,6 +22,7 @@ interface RootLayoutProps {
 export default async function RootLayout({ children }: RootLayoutProps) {
 	const locale = await getServerLocale();
 	const config = await getGlobalConfig();
+	const siteMeta = await getSiteMeta();
 	const activeAnnouncementBar = getActiveAnnouncementBar(config.announcement_bars ?? []);
 
 	return (
@@ -35,7 +32,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
 					<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
 							'@context': 'https://schema.org',
 							'@type': 'Organization',
-							name: SITE_NAME,
+							name: siteMeta.name,
 							url: BASE_URL,
 							logo: `${BASE_URL}/logo.png`,
 							sameAs: [
@@ -46,7 +43,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
 					<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
 							'@context': 'https://schema.org',
 							'@type': 'WebSite',
-							name: SITE_NAME,
+							name: siteMeta.name,
 							url: BASE_URL,
 							inLanguage: 'de-DE'
 						}) }} />

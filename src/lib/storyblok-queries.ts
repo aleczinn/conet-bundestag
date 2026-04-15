@@ -5,21 +5,15 @@ import { draftMode } from 'next/headers';
 import { AnnouncementBarItem } from '@/components/layout/AnnouncementBar';
 
 interface GlobalConfig {
+	site_name: string;
+	site_description: string;
 	announcement_bars: AnnouncementBarItem[];
 }
 
-// const getVersion = async (ignoreDraftMode = false) => {
-// 	if (process.env.NODE_ENV === 'development') {
-// 		return 'draft' as const;
-// 	}
-//
-// 	if (ignoreDraftMode) {
-// 		return 'published' as const;
-// 	}
-//
-// 	const draft = await draftMode();
-// 	return draft.isEnabled ? 'draft' as const : 'published' as const;
-// };
+interface SiteMetadata {
+	name: string;
+	description: string;
+}
 
 export async function getVersion(): Promise<'draft' | 'published'> {
 	if (process.env.NODE_ENV === 'development') {
@@ -91,4 +85,19 @@ export const getGlobalConfig = cache(async (): Promise<GlobalConfig> => {
 		version,
 	});
 	return data.story.content;
+});
+
+export const getSiteMeta = cache(async (): Promise<SiteMetadata> => {
+	try {
+		const config = await getGlobalConfig();
+		return {
+			name: config.site_name || process.env.NEXT_PUBLIC_SITE_NAME || 'Website',
+			description: config.site_description || process.env.NEXT_PUBLIC_SITE_DESCRIPTION || 'Description',
+		};
+	} catch {
+		return {
+			name: process.env.NEXT_PUBLIC_SITE_NAME || 'Website',
+			description: process.env.NEXT_PUBLIC_SITE_DESCRIPTION || 'Description',
+		};
+	}
 });
