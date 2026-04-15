@@ -8,8 +8,9 @@ import SkipLinks from '@/components/layout/SkipLinks';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import AnnouncementBar from '@/components/layout/AnnouncementBar';
-import { getGlobalConfig, getSiteMeta } from '@/lib/storyblok-queries';
+import { getGlobalConfig } from '@/lib/storyblok-queries';
 import { notoSans, notoSerif, notoSerifExtra } from '@/app/fonts';
+import { getSiteMeta } from '@/lib/site-server';
 
 export const metadata: Metadata = {
 	metadataBase: new URL(BASE_URL),

@@ -1,15 +1,15 @@
-import { BASE_URL, SITE_NAME, SITE_DESCRIPTION } from '@/lib/site';
-import { getLinks } from '@/lib/storyblok-queries';
+import { BASE_URL } from '@/lib/site';
 import { DEFAULT_LOCALE } from '@/lib/locale/locales';
 import { getSlugMap, getTitle, translatePath } from '@/lib/locale/slug-map';
+import { getSiteMeta } from '@/lib/site-server';
 
 export const revalidate = 3600;
 
 export async function GET() {
 	const map = await getSlugMap();
+	const siteMeta = await getSiteMeta(DEFAULT_LOCALE);
 
 	const lines: string[] = [];
-
 	for (const entry of map.byReal.values()) {
 		if (entry.realSlug === 'home') continue;
 
@@ -19,13 +19,11 @@ export async function GET() {
 	}
 
 	const homeEntry = map.byReal.get('home');
-	const homeTitle = homeEntry
-		? getTitle(homeEntry, DEFAULT_LOCALE.language)
-		: SITE_NAME;
+	const homeTitle = homeEntry ? getTitle(homeEntry, DEFAULT_LOCALE.language) : siteMeta.name;
 
-	const content = `# ${SITE_NAME}
+	const content = `# ${siteMeta.name}
 
-> ${SITE_DESCRIPTION ?? ''}
+> ${siteMeta.description ?? ''}
 
 ## Seiten
 

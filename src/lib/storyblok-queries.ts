@@ -77,27 +77,13 @@ export const getLinks = cache(async (locale?: Locale) => {
 /**
  * Lädt die globale Konfiguration aus Storyblok, welche z. B. Inhalte wie Announcement-Bars beinhaltet.
  */
-export const getGlobalConfig = cache(async (): Promise<GlobalConfig> => {
+export const getGlobalConfig = cache(async (locale: Locale = DEFAULT_LOCALE): Promise<GlobalConfig> => {
 	const storyblokApi = getStoryblokApi();
 	const version = await getVersion();
 
 	const { data } = await storyblokApi.get('cdn/stories/config/global', {
 		version,
+		language: locale.storyblokCode,
 	});
 	return data.story.content;
-});
-
-export const getSiteMeta = cache(async (): Promise<SiteMetadata> => {
-	try {
-		const config = await getGlobalConfig();
-		return {
-			name: config.site_name || process.env.NEXT_PUBLIC_SITE_NAME || 'Website',
-			description: config.site_description || process.env.NEXT_PUBLIC_SITE_DESCRIPTION || 'Description',
-		};
-	} catch {
-		return {
-			name: process.env.NEXT_PUBLIC_SITE_NAME || 'Website',
-			description: process.env.NEXT_PUBLIC_SITE_DESCRIPTION || 'Description',
-		};
-	}
 });

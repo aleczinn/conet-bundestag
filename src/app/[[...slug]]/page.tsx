@@ -1,7 +1,7 @@
 import { StoryblokStory } from '@storyblok/react/rsc';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import { getSiteMeta, getStory } from '@/lib/storyblok-queries';
+import { getStory } from '@/lib/storyblok-queries';
 import { BASE_URL } from '@/lib/site';
 import Breadcrumbs, { buildBreadcrumbs } from '@/components/layout/Breadcrumbs';
 import {
@@ -13,6 +13,7 @@ import {
 import { t } from '@/lib/i18n';
 import { getServerLocale } from '@/lib/locale/server';
 import { getSlugMap, PageEntry, translatePath } from '@/lib/locale/slug-map';
+import { getSiteMeta } from '@/lib/site-server';
 
 interface PageProps {
 	params: Promise<{
@@ -39,7 +40,11 @@ function get404Object(locale: Locale) {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
 	const { slug } = await params;
 	const locale = await getServerLocale();
-	const entry = await resolveEntry(slug, locale.language);
+
+	const [entry, siteMeta] = await Promise.all([
+		resolveEntry(slug, locale.language),
+		getSiteMeta(locale),
+	]);
 
 	if (!entry) {
 		return get404Object(locale);
@@ -49,8 +54,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 	if (!result?.data?.story) {
 		return get404Object(locale);
 	}
-
-	const siteMeta = await getSiteMeta();
 
 	const story = result.data.story;
 	const content = story.content;
