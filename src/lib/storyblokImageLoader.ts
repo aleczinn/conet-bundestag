@@ -11,5 +11,5 @@ export default function storyblokImageLoader({ src, width, quality }: {
 	const originalWidth = match ? parseInt(match[1], 10) : Infinity;
 	const cappedWidth = Math.min(width, originalWidth); // Nie größer als das Original anfordern
 
-	return `${src}/m/${cappedWidth}x0/filters:format(avif):quality(${quality ?? 75})`;
+	return `${src}/m/${cappedWidth}x0/filters:format(avif):quality(${quality ?? 65})`;
 }
