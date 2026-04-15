@@ -4,6 +4,7 @@ import Section from '@/components/layout/Section';
 import { Button } from '@/components/ui/Button';
 import { Headline } from '@/components/ui/Headline';
 import { StoryblokMedia } from '@/components/storyblok/StoryblokMedia';
+import StoryblokRichText from '@/components/storyblok/StoryblokRichText';
 
 type Layout = 'media_left' | 'media_right';
 
@@ -50,13 +51,11 @@ export default function MediaWithText({ blok, priority = false }: MediaWithTextP
 				)}
 
 				{blok.text && (
-					<div className="font-sans [&_p:not(:last-child)]:mb-2"
-								dangerouslySetInnerHTML={{ __html: renderRichText(blok.text) ?? '' }}
-					/>
+					<StoryblokRichText content={blok.text} />
 				)}
 
 				{blok.button_text && (
-					<Button className="mt-4" variant="primary" mode="dark">
+					<Button className="mt-8" variant="primary" mode="dark">
 						{blok.button_text}
 					</Button>
 				)}

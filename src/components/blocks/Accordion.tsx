@@ -1,15 +1,16 @@
 'use client';
 
 import { storyblokEditable, StoryblokServerComponent } from '@storyblok/react/rsc';
-import { SbBlokData } from '@storyblok/react';
+import { renderRichText, SbBlokData } from '@storyblok/react';
 import Section from '@/components/layout/Section';
 import { Headline } from '@/components/ui/Headline';
 import { useState } from 'react';
 import { IconPlus } from '@/components/icons';
+import StoryblokRichText from '@/components/storyblok/StoryblokRichText';
 
 interface AccordionItemData extends SbBlokData {
 	title: string;
-	content: SbBlokData[];
+	text: any;
 	default_open: boolean;
 }
 
@@ -92,9 +93,9 @@ export default function Accordion({ blok }: AccordionProps) {
 									 className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
 							>
 								<div className="overflow-hidden">
-									{item.content?.map((nested) => (
-										<StoryblokServerComponent key={nested._uid} blok={nested} />
-									))}
+									<div className="px-8 py-4 bg-gray-10 mb-12">
+										<StoryblokRichText content={item.text} />
+									</div>
 								</div>
 							</div>
 						</div>
