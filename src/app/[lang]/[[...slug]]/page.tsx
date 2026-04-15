@@ -17,7 +17,8 @@ import { getSiteMeta } from '@/lib/site-server';
 
 interface PageProps {
 	params: Promise<{
-		slug?: string[];
+		lang: string;
+		slug?: string[]
 	}>;
 }
 
@@ -132,22 +133,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
  */
 export async function generateStaticParams() {
 	const map = await getSlugMap();
-	const params: { slug: string[] }[] = [];
+	const params: { lang: string; slug: string[] }[] = [];
 
 	for (const lang of availableLanguages) {
 		for (const translated of map.byTranslated[lang].keys()) {
 			const parts = translated === 'home' ? [] : translated.split('/');
-			params.push({ slug: [lang, ...parts] });
+			params.push({ lang, slug: parts });
 		}
 	}
 	return params;
 }
 
 export default async function Page({ params }: PageProps) {
-	const { slug } = await params;
-	const locale = await getServerLocale();
-	const entry = await resolveEntry(slug, locale.language);
+	const { lang, slug } = await params;
+	const locale = getLocaleFromLang(lang);
 
+	if (!locale) {
+		return notFound();
+	}
+
+	const entry = await resolveEntry(slug, locale.language);
 	if (!entry) {
 		return notFound();
 	}
