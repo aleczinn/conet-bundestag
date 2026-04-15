@@ -3,7 +3,7 @@ import { availableLanguages, DEFAULT_LOCALE, getLocaleFromLang } from '@/lib/loc
 import { getGlobalConfig } from '@/lib/storyblok-queries';
 import { BASE_URL, getActiveAnnouncementBar } from '@/lib/site';
 import { getSiteMeta } from '@/lib/site-server';
-import { notoSans, notoSerif, notoSerifExtra } from '@/app/fonts';
+import { notoSans, notoSerif } from '@/app/fonts';
 import SkipLinks from '@/components/layout/SkipLinks';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -47,7 +47,7 @@ export default async function LangLayout({ children, params,}: LangLayoutProps) 
 
 	return (
 		<html lang={locale.language}
-					className={`${notoSans.variable} ${notoSerif.variable} ${notoSerifExtra.variable}`}
+					className={`${notoSans.variable} ${notoSerif.variable}`}
 					data-scroll-behavior="smooth"
 		>
 			<body className="bg-white subpixel-antialiased flex flex-col w-full min-h-screen">
