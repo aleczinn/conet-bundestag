@@ -5,6 +5,7 @@ import { availableLanguages, Locale } from '@/lib/locale/locales';
 import { t } from '@/lib/i18n';
 import Section from '@/components/layout/Section';
 import { getSlugMap, translatePath } from '@/lib/locale/slug-map';
+import { buildLocalizedHref } from '@/lib/locale/links';
 
 interface ServiceBarProps {
 	locale: Locale;
@@ -31,16 +32,26 @@ export default async function ServiceBar({ locale }: ServiceBarProps) {
 	const titleSimpleLanguage = t(locale, 'header.simple_language');
 	const titleBackToGerman = t(locale, 'header.back_to_german');
 
-
 	const isGebaerdensprache = false;
 	const isLeichteSprache = false;
+
+	const lang = locale?.language;
+
+	// Alle Links zentral als realSlugs definiert
+	const [
+		gebaerdenspracheHref,
+		leichteSpracheHref,
+	] = await Promise.all([
+		buildLocalizedHref('gebaerdensprache', lang),
+		buildLocalizedHref('leichte_sprache', lang),
+	]);
 
 	return (
 		<Section as="nav" variant="full" className="h-10 bg-gray-10" aria-label="Servicenavigation">
 			<ul className="h-full flex flex-row justify-end items-center gap-8">
 				{(isPageGerman || isLeichteSprache) && (
 					<li>
-						<Link href="/gebaerdensprache"
+						<Link href={gebaerdenspracheHref}
 									title={titleSignLanguage}
 									className="h-full flex flex-row items-center gap-1 text-gray-90 hover:cursor-pointer"
 						>
@@ -52,7 +63,7 @@ export default async function ServiceBar({ locale }: ServiceBarProps) {
 
 				{(isPageGerman || isGebaerdensprache) && (
 					<li>
-						<Link href="/leichte_sprache"
+						<Link href={leichteSpracheHref}
 									title={titleSimpleLanguage}
 									className="h-full flex flex-row items-center gap-1 text-gray-90 hover:cursor-pointer"
 						>

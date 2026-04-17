@@ -3,20 +3,10 @@ import IconMastodon from '@/components/icons/IconMastodon';
 import Link from 'next/link';
 import Section from '@/components/layout/Section';
 import { Locale } from '@/lib/locale/locales';
-import { getSlugMap, translatePath } from '@/lib/locale/slug-map';
+import { buildLocalizedHref } from '@/lib/locale/links';
 
 interface FooterProps {
 	locale: Locale;
-}
-
-/** Baut einen lokalisierten Link-Pfad aus einem realSlug. */
-async function buildLocalizedHref(realSlug: string, lang: string): Promise<string> {
-	const map = await getSlugMap();
-	const entry = map.byReal.get(realSlug);
-	if (!entry) return `/${lang}`; // Fallback: Startseite, falls Slug fehlt
-
-	const path = translatePath(map.byReal, realSlug, lang);
-	return `/${lang}/${path}`;
 }
 
 export default async function Footer({ locale }: FooterProps) {
