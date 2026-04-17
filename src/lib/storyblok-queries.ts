@@ -4,15 +4,20 @@ import { DEFAULT_LOCALE, Locale } from '@/lib/locale/locales';
 import { draftMode } from 'next/headers';
 import { AnnouncementBarItem } from '@/components/layout/AnnouncementBar';
 
-interface GlobalConfig {
+export interface GlobalConfig {
 	site_name: string;
 	site_description: string;
 	announcement_bars: AnnouncementBarItem[];
+	navigation: NavigationItem[];
 }
 
-interface SiteMetadata {
-	name: string;
-	description: string;
+export interface NavigationItem {
+	_uid: string;
+	label?: string;
+	link: {
+		id: string;
+		cached_url: string;
+	};
 }
 
 export async function getVersion(): Promise<'draft' | 'published'> {
